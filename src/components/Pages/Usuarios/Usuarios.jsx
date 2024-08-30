@@ -8,6 +8,7 @@ import CommonTable from '../../common/CommonTable';
 import jsPDF from 'jspdf';
 import { MainContext, APP_STATE } from '../../../Context/MainContext'
 import imagesList from '../../../assets'
+import 'jspdf-autotable';
 
 
 
@@ -288,7 +289,7 @@ const Usuarios = () => {
         doc.save(isActive ? 'reporte_usuarios_activos.pdf' : 'reporte_usuarios_inactivos.pdf');
     };*/
     
-    const generatePDF = (isActive) => {
+    /*const generatePDF = (isActive) => {
         const doc = new jsPDF('landscape', 'mm', 'a4');
         const imageUrl = imagesList.Logo; // Usar la imagen importada
     
@@ -367,8 +368,59 @@ const Usuarios = () => {
         });
     
         doc.save(isActive ? 'reporte_usuarios_activos.pdf' : 'reporte_usuarios_inactivos.pdf');
-    };
+    };*/
     
+    const generatePDF = (isActive) => {
+        const doc = new jsPDF('landscape', 'mm', 'a4');
+        const imageUrl = imagesList.Logo; // Usar la imagen importada
+    
+        // Añadir imagen
+        const addImage = () => {
+            const imgWidth = 40;
+            const imgHeight = 30;
+            const margin = 10;
+            doc.addImage(imageUrl, 'JPEG', doc.internal.pageSize.getWidth() - imgWidth - margin, margin, imgWidth, imgHeight);
+        };
+    
+        // Preparar datos
+        const filteredUsers = usuariosList.filter(user => isActive ? user.estado === 'Activo' : user.estado === 'Inactivo');
+        const tableData = filteredUsers.map(user => [
+            user.id.toString(),
+            user.username,
+            user.user,
+            user.carnet,
+            user.rol,
+            user.dpi,
+            user.telefono,
+            user.estado
+        ]);
+    
+        const headers = ['ID', 'Nombre de usuario', 'Nombre', 'Carnet', 'Rol', 'DPI', 'Teléfono', 'Estado'];
+    
+        // Configurar y generar la tabla
+        addImage();
+        doc.setFontSize(12);
+        doc.text(isActive ? 'Reporte de Usuarios Activos' : 'Reporte de Usuarios Inactivos', 10, 25);
+        
+        doc.autoTable({
+            head: [headers],
+            body: tableData,
+            startY: 30, // Margen para la imagen y el título
+            theme: 'grid',
+            styles: {
+                fontSize: 10,
+                cellPadding: 3,
+            },
+            headStyles: {
+                fillColor: [22, 160, 133], // Cambiar color de encabezado si se desea
+            },
+            didDrawPage: (data) => {
+                addImage(); // Añadir imagen en cada nueva página
+            },
+        });
+    
+        doc.save(isActive ? 'reporte_usuarios_activos.pdf' : 'reporte_usuarios_inactivos.pdf');
+    };
     
     
     
