@@ -3,11 +3,15 @@ import { createTheme } from '@mui/material/styles'
 const theme = createTheme({
 	palette: {
 		primary: {
-			main: '#1769aa',
+			main: '#4caf50', // Verde
 			contrastText: '#ffffff'
 		},
 		secondary: {
-			main: "#ab003c",
+			main: '#00bcd4', // Celeste
+			contrastText: '#ffffff'
+		},
+		error: {
+			main: '#f44336', // Rojo
 			contrastText: '#ffffff'
 		},
 		neutral: {
@@ -21,35 +25,35 @@ const theme = createTheme({
 				{
 					props: { variant: 'dashed' },
 					style: {
-						border: `2px dashed #1769aa`,
-						color: '#1769aa',
+						border: `2px dashed #4caf50`, // Verde
+						color: '#4caf50',
 						transition: 'border-color 0.3s, color 0.3s',
 						'&:hover': {
-							borderColor: '#0a4f73',
-							color: '#0a4f73'
+							borderColor: '#388e3c',
+							color: '#388e3c'
 						}
 					}
 				},
 				{
 					props: { variant: 'dashed', color: 'secondary' },
 					style: {
-						border: `2px dashed #ab003c`,
-						color: '#ab003c',
+						border: `2px dashed #00bcd4`, // Celeste
+						color: '#00bcd4',
 						transition: 'border-color 0.3s, color 0.3s',
 						'&:hover': {
-							borderColor: '#750b2e',
-							color: '#750b2e'
+							borderColor: '#0097a7',
+							color: '#0097a7'
 						}
 					}
 				},
 				{
 					props: { variant: 'radius' },
 					style: {
-						backgroundColor: '#1769aa',
+						backgroundColor: '#4caf50', // Verde
 						borderRadius: 24,
 						transition: 'background-color 0.3s, transform 0.2s',
 						'&:hover': {
-							backgroundColor: '#135e96',
+							backgroundColor: '#388e3c',
 							transform: 'scale(1.05)'
 						}
 					}
@@ -57,12 +61,12 @@ const theme = createTheme({
 				{
 					props: { variant: 'radius', color: 'secondary' },
 					style: {
-						backgroundColor: '#ab003c',
+						backgroundColor: '#00bcd4', // Celeste
 						color: '#ffffff',
 						borderRadius: 24,
 						transition: 'background-color 0.3s, transform 0.2s',
 						'&:hover': {
-							backgroundColor: '#920b2e',
+							backgroundColor: '#0097a7',
 							transform: 'scale(1.05)'
 						}
 					}
@@ -72,13 +76,13 @@ const theme = createTheme({
 					style: {
 						backgroundColor: 'transparent',
 						borderRadius: 24,
-						border: `2px solid #1769aa`,
-						color: `#1769aa`,
+						border: `2px solid #4caf50`, // Verde
+						color: `#4caf50`,
 						transition: 'border-color 0.3s, color 0.3s, background-color 0.3s',
 						'&:hover': {
-							backgroundColor: '#e3f2fd',
-							borderColor: '#0a4f73',
-							color: '#0a4f73'
+							backgroundColor: '#e8f5e9',
+							borderColor: '#388e3c',
+							color: '#388e3c'
 						}
 					}
 				},
@@ -87,25 +91,25 @@ const theme = createTheme({
 					style: {
 						backgroundColor: 'transparent',
 						borderRadius: 24,
-						border: `2px solid #ab003c`,
-						color: `#ab003c`,
+						border: `2px solid #00bcd4`, // Celeste
+						color: `#00bcd4`,
 						transition: 'border-color 0.3s, color 0.3s, background-color 0.3s',
 						'&:hover': {
-							backgroundColor: '#fce4ec',
-							borderColor: '#750b2e',
-							color: '#750b2e'
+							backgroundColor: '#b2ebf2',
+							borderColor: '#0097a7',
+							color: '#0097a7'
 						}
 					}
 				},
 				{
 					props: { variant: 'contained' },
 					style: {
-						background: "linear-gradient(45deg, #1769aa 30%, #35baf6 90%)",
+						background: "linear-gradient(45deg, #4caf50 30%, #81c784 90%)", // Verde
 						color: `#ffffff`,
 						borderRadius: 24,
 						transition: 'background 0.3s, transform 0.2s',
 						'&:hover': {
-							background: "linear-gradient(45deg, #135e96 30%, #1e88e5 90%)",
+							background: "linear-gradient(45deg, #388e3c 30%, #66bb6a 90%)",
 							transform: 'scale(1.05)'
 						}
 					}
@@ -113,12 +117,12 @@ const theme = createTheme({
 				{
 					props: { variant: 'contained', color: 'secondary' },
 					style: {
-						background: "linear-gradient(45deg, #ab003c 30%, #f73378 90%)",
+						background: "linear-gradient(45deg, #00bcd4 30%, #4dd0e1 90%)", // Celeste
 						color: `#ffffff`,
 						borderRadius: 24,
 						transition: 'background 0.3s, transform 0.2s',
 						'&:hover': {
-							background: "linear-gradient(45deg, #920b2e 30%, #ec407a 90%)",
+							background: "linear-gradient(45deg, #0097a7 30%, #26c6da 90%)",
 							transform: 'scale(1.05)'
 						}
 					}
@@ -127,10 +131,10 @@ const theme = createTheme({
 					props: { variant: 'text', color: 'inherit' },
 					style: {
 						backgroundColor: 'transparent',
-						color: `#1769aa`,
+						color: `#4caf50`, // Verde
 						transition: 'color 0.3s',
 						'&:hover': {
-							color: '#0a4f73'
+							color: '#388e3c'
 						}
 					}
 				}

@@ -51,12 +51,11 @@ const Usuarios = () => {
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 120 },
-        { field: 'username', headerName: 'Nombre de usuario', width: 220 },
+        { field: 'username', headerName: 'Usuario', width: 220 },
         { field: 'user', headerName: 'Nombre', width: 220 },
         { field: 'password', headerName: 'Password', width: 220 },
         { field: 'correo', headerName: 'Correo', width: 220 },
         { field: 'carnet', headerName: 'Carnet', width: 220 },
-        { field: 'rol', headerName: 'Rol', width: 220 },
         { field: 'descripcion', headerName: 'Descripcion', width: 220 },
         { field: 'dpi', headerName: 'DPI', width: 220 },
         { field: 'telefono', headerName: 'Teléfono', width: 220 },
@@ -389,13 +388,13 @@ const Usuarios = () => {
             user.username,
             user.user,
             user.carnet,
-            user.rol,
+            user.descripcion,
             user.dpi,
             user.telefono,
             user.estado
         ]);
     
-        const headers = ['ID', 'Nombre de usuario', 'Nombre', 'Carnet', 'Rol', 'DPI', 'Teléfono', 'Estado'];
+        const headers = ['ID', 'Usuario', 'Nombre', 'Carnet', 'Rol', 'DPI', 'Teléfono', 'Estado'];
     
         // Configurar y generar la tabla
         addImage();
