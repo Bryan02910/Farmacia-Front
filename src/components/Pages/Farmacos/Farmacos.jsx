@@ -13,23 +13,34 @@ import 'jspdf-autotable';
 
 
 
-const Usuarios = () => {
+const Farmacos = () => {
 
     const { globalState } = useContext(MainContext);
     const [userRole, setUserRole] = useState();
 
     const initialState = {
-        username: "",
-        user: "",
-        password: "",
-        correo: "",
-        carnet: "",
-        rol: "",
+        id: "", 
+        nombre: "", 
         descripcion: "",
-        dpi: "",
-        telefono: "",
-        direccion: "",
-        estado: "",
+        precio_caja: "", 
+        precio_blister: "", 
+        precio_unidad: "", 
+        precio_venta_caja: "", 
+        precio_venta_blister: "", 
+        precio_venta_unidad: "", 
+        blisters_por_caja: "", 
+        unidades_por_blister: "", 
+        stock_caja: "", 
+        stock_blister: "", 
+        stock_unidad: "", 
+        nivel_reorden: "", 
+        codigo_barras: "", 
+        id_proveedor: "", 
+        id_laboratorio: "", 
+        fecha_vencimiento: "", 
+        fecha_creacion: "", 
+        ultima_actualizacion: "",
+        stock_total_calculado: ""
     };
 
     const [usuariosList, setUsuariosList] = useState([]);
@@ -45,22 +56,38 @@ const Usuarios = () => {
 
 
     const init = async () => {
-        const { data } = await ApiRequest().get('/usuarios');
+        const { data } = await ApiRequest().get('/Farmacos');
         setUsuariosList(data);
     };
 
     const columns = [
-        { field: 'id', headerName: 'ID', width: 120 },
-        { field: 'username', headerName: 'Usuario', width: 220 },
-        { field: 'user', headerName: 'Nombre', width: 220 },
-        { field: 'password', headerName: 'Password', width: 220 },
-        { field: 'correo', headerName: 'Correo', width: 220 },
-        { field: 'carnet', headerName: 'Carnet', width: 220 },
-        { field: 'descripcion', headerName: 'Descripcion', width: 220 },
-        { field: 'dpi', headerName: 'DPI', width: 220 },
-        { field: 'telefono', headerName: 'Teléfono', width: 220 },
-        { field: 'direccion', headerName: 'Dirección', width: 220 },
-        { field: 'estado', headerName: 'Estado', width: 220 },
+        { field: 'id', headerName: 'Codigo', width: 120 },
+        { field: 'nombre', headerName: 'Nombre', width: 220 },
+        { field: 'descripcion', headerName: 'Descripción', width: 220 },
+        { field: 'precio_caja', headerName: 'Precio por caja', width: 220 },
+        { field: 'precio_blister', headerName: 'Precio por blister', width: 220 },
+        { field: 'precio_unidad', headerName: 'Precio por unidad', width: 220 },
+        { field: 'precio_venta_caja', headerName: 'Precio venta caja', width: 220 },
+        { field: 'precio_venta_blister', headerName: 'Precio venta blister', width: 220 },
+        { field: 'precio_venta_unidad', headerName: 'Precio venta unidad', width: 220 },
+        { field: 'blisters_por_caja', headerName: 'Blisters por caja', width: 220 },
+        { field: 'unidades_por_blister', headerName: 'Unidades por blister', width: 220 },
+        { field: 'stock_caja', headerName: 'Stock por caja', width: 220 },
+        { field: 'stock_blister', headerName: 'Stock por blister', width: 220 },
+        { field: 'stock_unidad', headerName: 'Stock por unidad', width: 220 },
+        {
+			field: 'fecha_vencimiento',
+			headerName: 'Fecha de vencimiento',
+			width: 220,
+			valueFormatter: (params) => {
+			  const fechaCompleta = params.value; // Suponemos que params.value contiene la fecha y la hora
+			  const fecha = new Date(fechaCompleta);
+			  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+			  return fecha.toLocaleDateString('es-ES', options); // Ajusta 'es-ES' al idioma deseado
+			},
+		  },
+        { field: 'proveedor', headerName: 'Proveedor', width: 220 },
+        { field: 'laboratorio', headerName: 'Laboratorio', width: 220 },
         {
             field: '',
             headerName: 'Acciones',
@@ -555,4 +582,4 @@ const Usuarios = () => {
     );
 };
 
-export default Usuarios;
+export default Farmacos;

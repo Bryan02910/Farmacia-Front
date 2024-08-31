@@ -44,8 +44,8 @@ const sidebarConfig = [
     icon: <Inventory2Outlined />,
     children: [
       {
-        title: 'Lista de Productos',
-        path: '/app/inventario',
+        title: 'Lista de farmacos',
+        path: '/app/farmacos',
         icon: <Inventory2Outlined />,
       },
       {

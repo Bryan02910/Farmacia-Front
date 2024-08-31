@@ -16,7 +16,7 @@ const CommonTable = ({ data, columns }) => {
     return (
         <Card sx={{ p: 2, borderRadius: 2, boxShadow: 3 }}>
             <Typography variant="h6" sx={{ mb: 2 }}>
-                Usuarios
+              Datos:
             </Typography>
             <Box sx={{ height: 400, width: '100%' }}>
                 <DataGrid
