@@ -14,9 +14,15 @@ function CustomLoadingOverlay() {
 
 const CommonTable = ({ data, columns }) => {
     return (
-        <Card sx={{ p: 2, borderRadius: 2, boxShadow: 3 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>
-              Datos:
+        <Card sx={{
+            p: 3,
+            borderRadius: 4,
+            boxShadow: 5,
+            backgroundColor: '#f9f9f9', /* Fondo más claro para la tarjeta */
+            border: '1px solid #ddd', /* Borde sutil para dar definición */
+        }}>
+            <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#444' }}>
+                Datos:
             </Typography>
             <Box sx={{ height: 400, width: '100%' }}>
                 <DataGrid
@@ -24,7 +30,7 @@ const CommonTable = ({ data, columns }) => {
                     rows={data}
                     columns={columns}
                     pageSize={10}
-                    rowsPerPageOptions={[10]}
+                    rowsPerPageOptions={[10, 20, 50]}
                     disableSelectionOnClick
                     pagination
                     components={{
@@ -32,21 +38,32 @@ const CommonTable = ({ data, columns }) => {
                     }}
                     sx={{
                         '& .MuiDataGrid-columnHeaders': {
-                            backgroundColor: '#f5f5f5',
+                            backgroundColor: '#e0e0e0', /* Color de fondo para el encabezado */
                             color: '#333',
                             fontWeight: 'bold',
+                            borderBottom: '2px solid #ccc', /* Línea inferior más gruesa */
                         },
                         '& .MuiDataGrid-cell': {
                             borderBottom: '1px solid #e0e0e0',
+                            padding: '8px', /* Espaciado interno para celdas */
+                            fontSize: '0.875rem', /* Tamaño de fuente ajustado */
                         },
                         '& .MuiDataGrid-footerContainer': {
-                            borderTop: '1px solid #e0e0e0',
+                            borderTop: '1px solid #ccc',
+                            backgroundColor: '#f1f1f1', /* Fondo para la parte inferior */
                         },
                         '& .MuiPaginationItem-root': {
                             fontWeight: 'bold',
+                            color: '#1976d2', /* Color azul para los elementos de paginación */
                         },
                         '& .MuiDataGrid-virtualScroller': {
                             backgroundColor: '#ffffff',
+                        },
+                        '& .MuiDataGrid-row:hover': {
+                            backgroundColor: '#f0f8ff', /* Color de fondo al pasar el mouse */
+                        },
+                        '& .MuiDataGrid-selectedRowCount': {
+                            color: '#1976d2', /* Color para la cuenta de filas seleccionadas */
                         },
                     }}
                 />

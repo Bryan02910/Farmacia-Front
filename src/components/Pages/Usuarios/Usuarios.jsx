@@ -293,266 +293,244 @@ const Usuarios = () => {
 	
    // useEffect(init, []);
 
-    return (
-        <>
-            <Dialog maxWidth='xs' open={openDialogDelete} onClose={handleDialogDelete}>
-                <DialogTitle>
-                    ¿Desea eliminar este usuario?
-                </DialogTitle>
-                <DialogContent>
-                    <Typography variant='h5'>Esta acción es irreversible</Typography>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant='text' color='primary' onClick={handleDialogDelete}>Cancelar</Button>
-                    <Button variant='contained' color='primary' onClick={onDelete}>Aceptar</Button>
-                </DialogActions>
-            </Dialog>
-            
-            <Dialog maxWidth='xs' open={openDialog} onClose={handleDialog}>
-                <DialogTitle>
-                    {isEdit ? 'Editar Usuario' : 'Crear Usuario'}
-                </DialogTitle>
-                <DialogContent>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={12}>
-                            <TextField
-                                margin='normal'
-                                name='username'
-                                value={body.username}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                color='primary'
-                                fullWidth
-                                label='Nombre de usuario'
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12}>
-                            <TextField
-                                margin='normal'
-                                name='user'
-                                value={body.user}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                color='primary'
-                                fullWidth
-                                label='Nombre'
-                            />
-                        </Grid>
-                        
-                    <Grid item xs={12} sm={12}>
+   return (
+    <>
+        {/* Dialogo para Eliminar Usuario */}
+        <Dialog maxWidth='xs' open={openDialogDelete} onClose={handleDialogDelete}>
+            <DialogTitle>¿Desea eliminar este usuario?</DialogTitle>
+            <DialogContent>
+                <Typography variant='body1' color='textSecondary'>
+                    Esta acción es irreversible.
+                </Typography>
+            </DialogContent>
+            <DialogActions>
+                <Button variant='text' color='primary' onClick={handleDialogDelete}>Cancelar</Button>
+                <Button variant='contained' color='primary' onClick={onDelete}>Aceptar</Button>
+            </DialogActions>
+        </Dialog>
+
+        {/* Dialogo para Crear/Editar Usuario */}
+        <Dialog maxWidth='xs' open={openDialog} onClose={handleDialog}>
+            <DialogTitle>{isEdit ? 'Editar Usuario' : 'Crear Usuario'}</DialogTitle>
+            <DialogContent dividers>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <TextField
+                            margin='normal'
+                            name='username'
+                            value={body.username}
+                            onChange={onChange}
+                            variant='outlined'
+                            size='small'
+                            fullWidth
+                            label='Nombre de usuario'
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            margin='normal'
+                            name='user'
+                            value={body.user}
+                            onChange={onChange}
+                            variant='outlined'
+                            size='small'
+                            fullWidth
+                            label='Nombre'
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
                         <TextField
                             margin='normal'
                             name='password'
                             onChange={({ target }) => setPassword(target.value)}
                             variant='outlined'
                             size='small'
-                            color='primary'
                             fullWidth
                             label='Contraseña'
-                            
+                            type='password'
                         />
                     </Grid>
-                
-                        <Grid item xs={12} sm={12}>
-                            <TextField
-                                margin='normal'
-                                name='correo'
-                                value={body.correo}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                color='primary'
-                                fullWidth
-                                label='Correo'
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12}>
-                            <TextField
-                                margin='normal'
-                                name='carnet'
-                                value={body.carnet}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                color='primary'
-                                fullWidth
-                                label='Carnet'
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12}>
+                    <Grid item xs={12}>
+                        <TextField
+                            margin='normal'
+                            name='correo'
+                            value={body.correo}
+                            onChange={onChange}
+                            variant='outlined'
+                            size='small'
+                            fullWidth
+                            label='Correo'
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            margin='normal'
+                            name='carnet'
+                            value={body.carnet}
+                            onChange={onChange}
+                            variant='outlined'
+                            size='small'
+                            fullWidth
+                            label='Carnet'
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
                         <InputLabel htmlFor="rol">Rol del usuario</InputLabel>
-                    <Select
-                        name="rol"
-                        value={body.rol || ''} // Asegúrate de que body.rol tenga un valor o esté vacío
-                        onChange={onChange}
-                        variant="outlined"
-                        size="small"
-                        color="primary"
-                        fullWidth
-                    >
-                        {roles.map((rol) => (
-                            <MenuItem key={rol.id} value={rol.id}>
-                                {rol.descripcion} {/* Ajusta esto según tu respuesta de API */}
-                            </MenuItem>
-                        ))}
-                    </Select>
+                        <Select
+                            name="rol"
+                            value={body.rol || ''}
+                            onChange={onChange}
+                            variant="outlined"
+                            size="small"
+                            fullWidth
+                        >
+                            {roles.map((rol) => (
+                                <MenuItem key={rol.id} value={rol.id}>
+                                    {rol.descripcion}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            margin='normal'
+                            name='dpi'
+                            value={body.dpi}
+                            onChange={onChange}
+                            variant='outlined'
+                            size='small'
+                            fullWidth
+                            label='DPI'
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            margin='normal'
+                            name='telefono'
+                            value={body.telefono}
+                            onChange={onChange}
+                            variant='outlined'
+                            size='small'
+                            fullWidth
+                            label='Teléfono'
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            margin='normal'
+                            name='direccion'
+                            value={body.direccion}
+                            onChange={onChange}
+                            variant='outlined'
+                            size='small'
+                            fullWidth
+                            label='Dirección'
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <InputLabel htmlFor="estado">Estado del usuario</InputLabel>
+                        <Select
+                            name='estado'
+                            value={body.estado}
+                            onChange={onChange}
+                            variant='outlined'
+                            size='small'
+                            fullWidth
+                        >
+                            <MenuItem value="Activo">Activo</MenuItem>
+                            <MenuItem value="Inactivo">Inactivo</MenuItem>
+                        </Select>
+                    </Grid>
                 </Grid>
+            </DialogContent>
+            <DialogActions>
+                <Button variant='text' color='primary' onClick={handleDialog}>Cancelar</Button>
+                <Button variant='contained' color='primary' onClick={isEdit ? onEdit : onSubmit}>Guardar</Button>
+            </DialogActions>
+        </Dialog>
 
-                        <Grid item xs={12} sm={12}>
-                            <TextField
-                                margin='normal'
-                                name='dpi'
-                                value={body.dpi}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
+        {/* Página de Usuarios */}
+        <Page title="Chapina | Usuarios">
+            <ToastAutoHide message={mensaje} />
+            <Container maxWidth='lg'>
+                <Box sx={{ pb: 5 }}>
+                    <Typography variant="h4">Lista de usuarios</Typography>
+                </Box>
+                <Grid container spacing={2} justifyContent="space-between" alignItems="center">
+                    {userRole === 'ADMIN' && (
+                        <Grid item>
+                            <Button
+                                onClick={() => { setIsEdit(false); handleDialog(); setBody(initialState); }}
+                                startIcon={<AddOutlined />}
+                                variant='contained'
                                 color='primary'
-                                fullWidth
-                                label='DPI'
-                            />
+                            >
+                                Nuevo
+                            </Button>
+                            <Button
+                                onClick={handleMenuClick}
+                                startIcon={<DownloadOutlined />}
+                                variant='contained'
+                                color='secondary'
+                                sx={{ ml: 2 }}
+                            >
+                                Descargar Reporte
+                            </Button>
+                            <Menu
+                                anchorEl={anchorEl}
+                                open={Boolean(anchorEl)}
+                                onClose={handleMenuClose}
+                            >
+                                <MenuItem onClick={() => { generatePDF(true); handleMenuClose(); }}>
+                                    Usuarios Activos
+                                </MenuItem>
+                                <MenuItem onClick={() => { generatePDF(false); handleMenuClose(); }}>
+                                    Usuarios Inactivos
+                                </MenuItem>
+                            </Menu>
                         </Grid>
-                        <Grid item xs={12} sm={12}>
-                            <TextField
-                                margin='normal'
-                                name='telefono'
-                                value={body.telefono}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                color='primary'
-                                fullWidth
-                                label='Teléfono'
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12}>
-                            <TextField
-                                margin='normal'
-                                name='direccion'
-                                value={body.direccion}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                color='primary'
-                                fullWidth
-                                label='Dirección'
-                            />
-                        </Grid>
-                        <Grid item xs={12} sm={12}>
-						<InputLabel htmlFor="estado">Estado del usuario</InputLabel>
-  						<Select
-    						name='estado'
-							value={body.estado}
-							onChange={onChange}
-							variant='outlined'
-							size='small'
-							color='primary'
-							fullWidth
-							placeholderlabel='Estado'
-							>
-								<MenuItem value="Activo">Activo</MenuItem>
-								<MenuItem value="Inactivo">Inactivo</MenuItem>
-							</Select>
-							</Grid>
+                    )}
+                </Grid>
+                <Grid container spacing={2} sx={{ mt: 2 }}>
+                    <Grid item xs={12}>
+                        <CommonTable
+                            data={usuariosList}
+                            columns={columns.map(column => {
+                                if (column.field === '') {
+                                    return {
+                                        ...column,
+                                        renderCell: (params) => (
+                                            <Stack
+                                                direction='row'
+                                                divider={<Divider orientation="vertical" flexItem />}
+                                                justifyContent="center"
+                                                alignItems="center"
+                                                spacing={2}
+                                            >
+                                                {userRole === 'ADMIN' && (
+                                                    <>
+                                                        <IconButton size='small' onClick={() => { setIsEdit(true); setBody(params.row); handleDialog(); }}>
+                                                            <EditOutlined />
+                                                        </IconButton>
+                                                        <IconButton size='small' onClick={() => { handleDialogDelete(); setIdDelete(params.id); }}>
+                                                            <DeleteOutline />
+                                                        </IconButton>
+                                                    </>
+                                                )}
+                                            </Stack>
+                                        )
+                                    };
+                                }
+                                return column;
+                            })}
+                        />
                     </Grid>
-                </DialogContent>
-                <DialogActions>
-                    <Button variant='text' color='primary' onClick={handleDialog}>Cancelar</Button>
-                    <Button variant='contained' color='primary' onClick={isEdit ? onEdit : onSubmit}>Guardar</Button>
-                </DialogActions>
-            </Dialog>
-            
-            <Page title="Chapina| Usuarios">
-                <ToastAutoHide message={mensaje} />
-                <Container maxWidth='lg'>
-                    <Box sx={{ pb: 5 }}>
-                        <Typography variant="h5">Lista de usuarios</Typography>
-                    </Box>
-                    <Grid container spacing={2}>
-                        <Grid item xs={12} sm={4}>
-                            {userRole === 'ADMIN' && (
-                                <>
-                                    <Button
-                                        onClick={() => { setIsEdit(false); handleDialog(); setBody(initialState); }}
-                                        startIcon={<AddOutlined />}
-                                        variant='contained'
-                                        color='primary'
-                                    >
-                                        Nuevo
-                                    </Button>
-                                    <Button
-                                    onClick={handleMenuClick}
-                                    startIcon={<DownloadOutlined />}
-                                    variant='contained'
-                                    color='secondary'
-                                    sx={{ ml: 2 }}
-                                    style={{ marginLeft: '10px' }}
-                                >
-                                    Descargar Reporte
-                                </Button>
-                                                                <Menu
-                                    anchorEl={anchorEl}
-                                    open={Boolean(anchorEl)}
-                                    onClose={handleMenuClose}
-                                >
-                                    <MenuItem onClick={() => {
-                                        generatePDF(true); // Llama a la función para usuarios activos
-                                        handleMenuClose();
-                                    }}>
-                                        Usuarios Activos
-                                    </MenuItem>
-                                    <MenuItem onClick={() => {
-                                        generatePDF(false); // Llama a la función para usuarios inactivos
-                                        handleMenuClose();
-                                    }}>
-                                        Usuarios Inactivos
-                                    </MenuItem>
-                                </Menu>
+                </Grid>
+            </Container>
+        </Page>
+    </>
+);
 
-                                </>
-                            )}
-                        </Grid>
-                        <Grid item xs={12} sm={8} />
-                        <Grid item xs={12} sm={12}>
-                            <CommonTable
-                                data={usuariosList}
-                                columns={columns.map(column => {
-                                    if (column.field === '') {
-                                        return {
-                                            ...column,
-                                            renderCell: (params) => (
-                                                <Stack direction='row' divider={<Divider orientation="vertical" flexItem />} justifyContent="center" alignItems="center" spacing={2}>
-                                                    {userRole === 'ADMIN' && (
-                                                        <>
-                                                            <IconButton size='small' onClick={() => {
-                                                                setIsEdit(true);
-                                                                setBody(params.row);
-                                                                handleDialog();
-                                                            }}>
-                                                                <EditOutlined />
-                                                            </IconButton>
-                                                            <IconButton size='small' onClick={() => {
-                                                                handleDialogDelete();
-                                                                setIdDelete(params.id);
-                                                            }}>
-                                                                <DeleteOutline />
-                                                            </IconButton>
-                                                        </>
-                                                    )}
-                                                </Stack>
-                                            )
-                                        };
-                                    }
-                                    return column;
-                                })}
-                            />
-                        </Grid>
-                    </Grid>
-                </Container>
-            </Page>
-        </>
-    );
 };
 
 export default Usuarios;

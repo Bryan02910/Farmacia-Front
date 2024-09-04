@@ -1,6 +1,6 @@
 export const APP_VALUES = {
 	API: 'http://localhost:4000/api',
 	NAME: 'Farmacia Chapina',
-	VERSION: 'v1.0.0',
+	VERSION: '',
 	ROOT_ROUTE: 'app'
 }
