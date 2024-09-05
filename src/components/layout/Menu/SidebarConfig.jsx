@@ -49,8 +49,13 @@ const sidebarConfig = [
         icon: <Inventory2Outlined />,
       },
       {
-        title: 'Agregar Producto',
-        path: '/app/inventario/agregar',
+        title: 'Agregar laboratorio',
+        path: '/app/laboratorio',
+        icon: <Inventory2Outlined />,
+      },
+      {
+        title: 'Agregar proveedor',
+        path: '/app/proveedor',
         icon: <Inventory2Outlined />,
       },
     ],

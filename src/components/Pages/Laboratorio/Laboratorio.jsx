@@ -13,15 +13,17 @@ import 'jspdf-autotable';
 
 
 
-const Rol = () => {
+const Laboratorio = () => {
 
     const { globalState } = useContext(MainContext);
     const [userRole, setUserRole] = useState();
 
     const initialState = {
         id: "",
-        descripcion: "",
-        
+        nombre: "",
+        direccion: "",
+        telefono: "",
+        correo_electronico: "",
     };
 
     const [usuariosList, setUsuariosList] = useState([]);
@@ -34,13 +36,16 @@ const Rol = () => {
 
 
     const init = async () => {
-        const { data } = await ApiRequest().get('/roles');
+        const { data } = await ApiRequest().get('/laboratorio');
         setUsuariosList(data);
     };
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 120 },
-        { field: 'descripcion', headerName: 'Descripción', width: 220 },
+        { field: 'nombre', headerName: 'Nombre', width: 220 },
+        { field: 'direccion', headerName: 'Dirección', width: 220 },
+        { field: 'telefono', headerName: 'Telefono', width: 220 },
+        { field: 'correo_electronico', headerName: 'Correo', width: 220 },
         {
             field: '',
             headerName: 'Acciones',
@@ -71,7 +76,7 @@ const Rol = () => {
 
     const onDelete = async () => {
 		try {
-			const { data } = await ApiRequest().post('/eliminar_rol', { id: idDelete })
+			const { data } = await ApiRequest().post('eliminar_lab', { id: idDelete })
 			setMensaje({
 				ident: new Date().getTime(),
 				message: data.message,
@@ -87,6 +92,7 @@ const Rol = () => {
 			})
 		}
 	}
+
     const handleDialog = () => {
         
         setOpenDialog(prev => !prev);
@@ -108,7 +114,7 @@ const Rol = () => {
 
     const onSubmit = async () => {
         try {
-            const { data } = await ApiRequest().post('/guardar_rol', body);
+            const { data } = await ApiRequest().post('/guardar_lab', body);
             handleDialog();
             setBody(initialState);
             setMensaje({
@@ -130,7 +136,7 @@ const Rol = () => {
     const onEdit = async () => {
         try {
             
-            const { data } = await ApiRequest().post('/editar_rol', body);
+            const { data } = await ApiRequest().post('/editar_lab', body);
             handleDialog();
             setBody(initialState);
             setMensaje({
@@ -178,7 +184,7 @@ const Rol = () => {
     <>
         {/* Dialogo para Eliminar Usuario */}
         <Dialog maxWidth='xs' open={openDialogDelete} onClose={handleDialogDelete}>
-            <DialogTitle>¿Desea eliminar este rol?</DialogTitle>
+            <DialogTitle>¿Desea eliminar este laboratorio?</DialogTitle>
             <DialogContent>
                 <Typography variant='body1' color='textSecondary'>
                     Esta acción es irreversible.
@@ -192,21 +198,58 @@ const Rol = () => {
 
         {/* Dialogo para Crear/Editar Usuario */}
         <Dialog maxWidth='xs' open={openDialog} onClose={handleDialog}>
-            <DialogTitle>{isEdit ? 'Editar rol' : 'Crear rol'}</DialogTitle>
+            <DialogTitle>{isEdit ? 'Editar Laboratorio' : 'Crear Laboratorio'}</DialogTitle>
             <DialogContent dividers>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <TextField
                             margin='normal'
-                            name='descripcion'
-                            value={body.descripcion}
+                            name='nombre'
+                            value={body.nombre}
                             onChange={onChange}
                             variant='outlined'
                             size='small'
                             fullWidth
-                            label='Descripción'
+                            label='Nombre del laboratorio'
                         />
                     </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            margin='normal'
+                            name='direccion'
+                            value={body.direccion}
+                            onChange={onChange}
+                            variant='outlined'
+                            size='small'
+                            fullWidth
+                            label='Dirección'
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            margin='normal'
+                            name='telefono'
+                            value={body.telefono}
+                            onChange={onChange}
+                            variant='outlined'
+                            size='small'
+                            fullWidth
+                            label='Telefono'
+                        />
+                    </Grid>
+                    <Grid item xs={12}>
+                        <TextField
+                            margin='normal'
+                            name='correo_electronico'
+                            value={body.correo_electronico}
+                            onChange={onChange}
+                            variant='outlined'
+                            size='small'
+                            fullWidth
+                            label='Correo'
+                        />
+                    </Grid>
+                  
                 </Grid>
             </DialogContent>
             <DialogActions>
@@ -216,11 +259,11 @@ const Rol = () => {
         </Dialog>
 
         {/* Página de Usuarios */}
-        <Page title="Chapina | Roles">
+        <Page title="Chapina | Laboratorios">
             <ToastAutoHide message={mensaje} />
             <Container maxWidth='lg'>
                 <Box sx={{ pb: 5 }}>
-                    <Typography variant="h4">Lista de roles</Typography>
+                    <Typography variant="h4">Lista de laboratorios</Typography>
                 </Box>
                 <Grid container spacing={2} justifyContent="space-between" alignItems="center">
                     {userRole === 'ADMIN' && (
@@ -278,4 +321,4 @@ const Rol = () => {
 
 };
 
-export default Rol;
+export default Laboratorio;
