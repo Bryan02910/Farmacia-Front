@@ -37,8 +37,10 @@ const Farmaco = () => {
         stock_unidad: "", 
         nivel_reorden: "", 
         codigo_barras: "", 
-        id_proveedor: "", 
-        id_laboratorio: "", 
+        proveedor_id: "", 
+        laboratorio_id: "",
+        proveedor: "", 
+        laboratorio: "",  
         fecha_vencimiento: "", 
         fecha_creacion: "", 
         ultima_actualizacion: "",
@@ -53,8 +55,10 @@ const Farmaco = () => {
     const [idDelete, setIdDelete] = useState(null);
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
     const [deletedUsers, setDeletedUsers] = useState([]);
-    const [roles, setRoles] = useState([]);
+    const [labs, setLaboratorios] = useState([]);
+    const [provs, setProveedores] = useState([]);
     const [password, setPassword] = useState("");
+    const [presentationType, setPresentationType] = useState('caja');
 
 
     const init = async () => {
@@ -64,6 +68,7 @@ const Farmaco = () => {
 
     const columns = [
         { field: 'id', headerName: 'Codigo', width: 120 },
+        { field: 'codigo_barras', headerName: 'Codigo de barras', width: 220 },
         { field: 'nombre', headerName: 'Nombre', width: 220 },
         { field: 'descripcion', headerName: 'Descripción', width: 220 },
         { field: 'precio_caja', headerName: 'Precio por caja', width: 220 },
@@ -162,7 +167,7 @@ const Farmaco = () => {
 
     const onSubmit = async () => {
         try {
-            const { data } = await ApiRequest().post('/guardar', body);
+            const { data } = await ApiRequest().post('/guardar_farmaco', body);
             handleDialog();
             setBody(initialState);
             setMensaje({
@@ -183,16 +188,10 @@ const Farmaco = () => {
 
     const onEdit = async () => {
         try {
-            const dataToSend = { ...body };
-            if (password) {
-                dataToSend.password = password;
-            } else {
-                delete dataToSend.password; // Eliminar la contraseña si está vacía
-            }
-            const { data } = await ApiRequest().post('/editar', dataToSend);
+            
+            const { data } = await ApiRequest().post('/editar_farmaco', body);
             handleDialog();
             setBody(initialState);
-            setPassword(""); // Limpiar la contraseña después de enviar
             setMensaje({
                 ident: new Date().getTime(),
                 message: data.message,
@@ -272,20 +271,32 @@ const Farmaco = () => {
         doc.save(isActive ? 'reporte_usuarios_activos.pdf' : 'reporte_usuarios_inactivos.pdf');
     };
     
-    
+    const handlePresentationChange = (event) => {
+        setPresentationType(event.target.value);
+    };
     
 
-    const fetchRoles = async () => {
+    const fetchLab = async () => {
         try {
-        const response = await ApiRequest().get('/roles'); 
-        setRoles(response.data);
+        const response = await ApiRequest().get('/lab_select'); 
+        setLaboratorios(response.data);
         } catch (error) {
-        console.error('Error fetching roles data:', error);
+        console.error('Error fetching laboratorios data:', error);
+        }
+    };
+
+    const fetchProv = async () => {
+        try {
+        const response = await ApiRequest().get('/prov_select'); 
+        setProveedores(response.data);
+        } catch (error) {
+        console.error('Error fetching proveedores data:', error);
         }
     };
 
     useEffect(() => {
-        fetchRoles(); // Fetch marca options when the component mounts.
+        fetchLab(); // Fetch marca options when the component mounts.
+        fetchProv();
         init();
     }, []);
 
@@ -303,9 +314,9 @@ const Farmaco = () => {
 
    return (
     <>
-        {/* Dialogo para Eliminar Usuario */}
-        <Dialog maxWidth='xs' open={openDialogDelete} onClose={handleDialogDelete}>
-            <DialogTitle>¿Desea eliminar este farmaco?</DialogTitle>
+      {/* Dialogo para Eliminar Usuario */}
+      <Dialog maxWidth='xs' open={openDialogDelete} onClose={handleDialogDelete}>
+            <DialogTitle>¿Desea eliminar este laboratorio?</DialogTitle>
             <DialogContent>
                 <Typography variant='body1' color='textSecondary'>
                     Esta acción es irreversible.
@@ -316,146 +327,265 @@ const Farmaco = () => {
                 <Button variant='contained' color='primary' onClick={onDelete}>Aceptar</Button>
             </DialogActions>
         </Dialog>
-
-        {/* Dialogo para Crear/Editar Usuario */}
-        <Dialog maxWidth='xs' open={openDialog} onClose={handleDialog}>
-            <DialogTitle>{isEdit ? 'Editar Usuario' : 'Crear Usuario'}</DialogTitle>
-            <DialogContent dividers>
-                <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <TextField
-                            margin='normal'
-                            name='id'
-                            value={body.id}
-                            onChange={onChange}
-                            variant='outlined'
-                            size='small'
-                            fullWidth
-                            label='Nombre de usuario'
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            margin='normal'
-                            name='user'
-                            value={body.user}
-                            onChange={onChange}
-                            variant='outlined'
-                            size='small'
-                            fullWidth
-                            label='Nombre'
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            margin='normal'
-                            name='password'
-                            onChange={({ target }) => setPassword(target.value)}
-                            variant='outlined'
-                            size='small'
-                            fullWidth
-                            label='Contraseña'
-                            type='password'
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            margin='normal'
-                            name='correo'
-                            value={body.correo}
-                            onChange={onChange}
-                            variant='outlined'
-                            size='small'
-                            fullWidth
-                            label='Correo'
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            margin='normal'
-                            name='carnet'
-                            value={body.carnet}
-                            onChange={onChange}
-                            variant='outlined'
-                            size='small'
-                            fullWidth
-                            label='Carnet'
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <InputLabel htmlFor="rol">Rol del usuario</InputLabel>
-                        <Select
-                            name="rol"
-                            value={body.rol || ''}
-                            onChange={onChange}
-                            variant="outlined"
-                            size="small"
-                            fullWidth
-                        >
-                            {roles.map((rol) => (
-                                <MenuItem key={rol.id} value={rol.id}>
-                                    {rol.descripcion}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            margin='normal'
-                            name='dpi'
-                            value={body.dpi}
-                            onChange={onChange}
-                            variant='outlined'
-                            size='small'
-                            fullWidth
-                            label='DPI'
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            margin='normal'
-                            name='telefono'
-                            value={body.telefono}
-                            onChange={onChange}
-                            variant='outlined'
-                            size='small'
-                            fullWidth
-                            label='Teléfono'
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <TextField
-                            margin='normal'
-                            name='direccion'
-                            value={body.direccion}
-                            onChange={onChange}
-                            variant='outlined'
-                            size='small'
-                            fullWidth
-                            label='Dirección'
-                        />
-                    </Grid>
-                    <Grid item xs={12}>
-                        <InputLabel htmlFor="estado">Estado del usuario</InputLabel>
-                        <Select
-                            name='estado'
-                            value={body.estado}
-                            onChange={onChange}
-                            variant='outlined'
-                            size='small'
-                            fullWidth
-                        >
-                            <MenuItem value="Activo">Activo</MenuItem>
-                            <MenuItem value="Inactivo">Inactivo</MenuItem>
-                        </Select>
-                    </Grid>
+        
+    {/* Dialogo para Crear/Editar Usuario */}
+    <Dialog maxWidth='xs' open={openDialog} onClose={handleDialog}>
+        <DialogTitle>{isEdit ? 'Editar Farmaco' : 'Crear Farmaco'}</DialogTitle>
+        <DialogContent dividers>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    <TextField
+                        margin='normal'
+                        name='id'
+                        value={body.id}
+                        onChange={onChange}
+                        variant='outlined'
+                        size='small'
+                        fullWidth
+                        label='Codigo'
+                    />
                 </Grid>
-            </DialogContent>
-            <DialogActions>
-                <Button variant='text' color='primary' onClick={handleDialog}>Cancelar</Button>
-                <Button variant='contained' color='primary' onClick={isEdit ? onEdit : onSubmit}>Guardar</Button>
-            </DialogActions>
-        </Dialog>
+                <Grid item xs={12}>
+                    <TextField
+                        margin='normal'
+                        name='codigo_barras'
+                        value={body.codigo_barras}
+                        onChange={onChange}
+                        variant='outlined'
+                        size='small'
+                        fullWidth
+                        label='Codigo de barras'
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        margin='normal'
+                        name='nombre'
+                        value={body.nombre}
+                        onChange={onChange}
+                        variant='outlined'
+                        size='small'
+                        fullWidth
+                        label='Nombre'
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <TextField
+                        margin='normal'
+                        name='descripcion'
+                        value={body.descripcion}
+                        onChange={onChange}
+                        variant='outlined'
+                        size='small'
+                        fullWidth
+                        label='Descripción'
+                    />
+                </Grid>
+                <Grid item xs={12}>
+                    <InputLabel htmlFor="presentationType">Tipo de presentación</InputLabel>
+                    <Select
+                        name="presentationType"
+                        value={presentationType}
+                        onChange={handlePresentationChange}
+                        variant="outlined"
+                        size="small"
+                        fullWidth
+                    >
+                        <MenuItem value="caja">Caja</MenuItem>
+                        <MenuItem value="blister">Blíster</MenuItem>
+                        <MenuItem value="unidad">Unidad</MenuItem>
+                    </Select>
+                </Grid>
+
+                {/* Mostrar campos según la selección */}
+                {presentationType === 'caja' && (
+                    <>
+                        <Grid item xs={12}>
+                            <TextField
+                                margin='normal'
+                                name='precio_caja'
+                                value={body.precio_caja}
+                                onChange={onChange}
+                                variant='outlined'
+                                size='small'
+                                fullWidth
+                                label='Precio compra caja'
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                margin='normal'
+                                name='precio_venta_caja'
+                                value={body.precio_venta_caja}
+                                onChange={onChange}
+                                variant='outlined'
+                                size='small'
+                                fullWidth
+                                label='Precio venta caja'
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                margin='normal'
+                                name='stock_caja'
+                                value={body.stock_caja}
+                                onChange={onChange}
+                                variant='outlined'
+                                size='small'
+                                fullWidth
+                                label='Stock de cajas'
+                            />
+                        </Grid>
+                    </>
+                )}
+
+                {presentationType === 'blister' && (
+                    <>
+                        <Grid item xs={12}>
+                            <TextField
+                                margin='normal'
+                                name='precio_blister'
+                                value={body.precio_blister}
+                                onChange={onChange}
+                                variant='outlined'
+                                size='small'
+                                fullWidth
+                                label='Precio compra blister'
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                margin='normal'
+                                name='precio_venta_blister'
+                                value={body.precio_venta_blister}
+                                onChange={onChange}
+                                variant='outlined'
+                                size='small'
+                                fullWidth
+                                label='Precio venta blister'
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                margin='normal'
+                                name='stock_blister'
+                                value={body.stock_blister}
+                                onChange={onChange}
+                                variant='outlined'
+                                size='small'
+                                fullWidth
+                                label='Stock blister'
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                margin='normal'
+                                name='blister_por_caja'
+                                value={body.blister_por_caja}
+                                onChange={onChange}
+                                variant='outlined'
+                                size='small'
+                                fullWidth
+                                label='Blisters por caja'
+                            />
+                        </Grid>
+                    </>
+                )}
+
+                {presentationType === 'unidad' && (
+                    <>
+                        <Grid item xs={12}>
+                            <TextField
+                                margin='normal'
+                                name='precio_unidad'
+                                value={body.precio_unidad}
+                                onChange={onChange}
+                                variant='outlined'
+                                size='small'
+                                fullWidth
+                                label='Precio compra unidad'
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                margin='normal'
+                                name='precio_venta_unidad'
+                                value={body.precio_venta_unidad}
+                                onChange={onChange}
+                                variant='outlined'
+                                size='small'
+                                fullWidth
+                                label='Precio venta unidad'
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                margin='normal'
+                                name='stock_unidad'
+                                value={body.stock_unidad}
+                                onChange={onChange}
+                                variant='outlined'
+                                size='small'
+                                fullWidth
+                                label='Stock unidades'
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <TextField
+                                margin='normal'
+                                name='unidades_por_blister'
+                                value={body.unidades_por_blister}
+                                onChange={onChange}
+                                variant='outlined'
+                                size='small'
+                                fullWidth
+                                label='Unidades por blister'
+                            />
+                        </Grid>
+                    </>
+                )}
+
+                <Grid item xs={12}>
+                    <InputLabel htmlFor="proveedor_id">Proveedor</InputLabel>
+                    <Select
+                        name="proveedor_id"
+                        value={body.proveedor_id || ''}
+                        onChange={onChange}
+                        variant="outlined"
+                        size="small"
+                        fullWidth
+                    >
+                        {provs.map((prov) => (
+                            <MenuItem key={prov.id} value={prov.id}>
+                                {prov.nombre}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </Grid>
+                <Grid item xs={12}>
+                    <InputLabel htmlFor="laboratorio_id">Laboratorio</InputLabel>
+                    <Select
+                        name="laboratorio_id"
+                        value={body.laboratorio_id || ''}
+                        onChange={onChange}
+                        variant="outlined"
+                        size="small"
+                        fullWidth
+                    >
+                        {labs.map((lab) => (
+                            <MenuItem key={lab.id} value={lab.id}>
+                                {lab.nombre}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </Grid>
+            </Grid>
+        </DialogContent>
+        <DialogActions>
+            <Button variant='text' color='primary' onClick={handleDialog}>Cancelar</Button>
+            <Button variant='contained' color='primary' onClick={isEdit ? onEdit : onSubmit}>Guardar</Button>
+        </DialogActions>
+    </Dialog>
 
         {/* Página de Usuarios */}
         <Page title="Chapina | Usuarios">
