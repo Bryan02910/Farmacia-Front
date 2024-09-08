@@ -219,7 +219,7 @@ const Farmaco = () => {
     };
 
     
-    const generatePDF = (isActive) => {
+    const generatePDF = (reportType) => {
         const doc = new jsPDF('landscape', 'mm', 'a4');
         const imageUrl = imagesList.Logo; // Usar la imagen importada
     
@@ -232,25 +232,56 @@ const Farmaco = () => {
         };
     
         // Preparar datos
-        const filteredUsers = usuariosList.filter(user => isActive ? user.estado === 'Activo' : user.estado === 'Inactivo');
-        const tableData = filteredUsers.map(user => [
-            user.id.toString(),
-            user.username,
-            user.user,
-            user.carnet,
-            user.descripcion,
-            user.dpi,
-            user.telefono,
-            user.estado
+        let filteredData;
+        let title;
+        if (reportType === 'stockBajo') {
+            filteredData = usuariosList.filter(farmaco => farmaco.stock_total_calculado <= farmaco.nivel_reorden);
+            title = 'Reporte de Fármacos con Stock Bajo';
+        } else if (reportType === 'prontosAVencer') {
+            const today = new Date();
+            filteredData = usuariosList.filter(farmaco => {
+                const fechaVencimiento = new Date(farmaco.fecha_vencimiento);
+                const diffDays = Math.ceil((fechaVencimiento - today) / (1000 * 60 * 60 * 24));
+                return diffDays <= 30; // Cambiar el número de días según sea necesario
+            });
+            title = 'Reporte de Fármacos Prontos a Vencer';
+        }
+    
+        const tableData = filteredData.map(farmaco => [
+            farmaco.id.toString(),
+            farmaco.nombre,
+            farmaco.descripcion,
+            farmaco.precio_caja,
+            farmaco.precio_blister,
+            farmaco.precio_unidad,
+            farmaco.stock_caja,
+            farmaco.stock_blister,
+            farmaco.stock_unidad,
+            farmaco.fecha_vencimiento,
+            farmaco.proveedor,
+            farmaco.laboratorio
         ]);
     
-        const headers = ['ID', 'Usuario', 'Nombre', 'Carnet', 'Rol', 'DPI', 'Teléfono', 'Estado'];
+        const headers = [
+            'ID', 
+            'Nombre', 
+            'Descripción', 
+            'Precio por Caja', 
+            'Precio por Blister', 
+            'Precio por Unidad', 
+            'Stock por Caja', 
+            'Stock por Blister', 
+            'Stock por Unidad', 
+            'Fecha de Vencimiento', 
+            'Proveedor', 
+            'Laboratorio'
+        ];
     
         // Configurar y generar la tabla
         addImage();
         doc.setFontSize(12);
-        doc.text(isActive ? 'Reporte de Usuarios Activos' : 'Reporte de Usuarios Inactivos', 10, 25);
-        
+        doc.text(title, 10, 25);
+    
         doc.autoTable({
             head: [headers],
             body: tableData,
@@ -268,8 +299,10 @@ const Farmaco = () => {
             },
         });
     
-        doc.save(isActive ? 'reporte_usuarios_activos.pdf' : 'reporte_usuarios_inactivos.pdf');
+        doc.save(reportType === 'stockBajo' ? 'reporte_stock_bajo.pdf' : 'reporte_prontos_a_vencer.pdf');
     };
+    
+    
     
     const handlePresentationChange = (event) => {
         setPresentationType(event.target.value);
@@ -327,7 +360,7 @@ const Farmaco = () => {
                 <Button variant='contained' color='primary' onClick={onDelete}>Aceptar</Button>
             </DialogActions>
         </Dialog>
-        
+
     {/* Dialogo para Crear/Editar Usuario */}
     <Dialog maxWidth='xs' open={openDialog} onClose={handleDialog}>
         <DialogTitle>{isEdit ? 'Editar Farmaco' : 'Crear Farmaco'}</DialogTitle>
@@ -605,27 +638,27 @@ const Farmaco = () => {
                             >
                                 Nuevo
                             </Button>
-                            <Button
-                                onClick={handleMenuClick}
-                                startIcon={<DownloadOutlined />}
-                                variant='contained'
-                                color='secondary'
-                                sx={{ ml: 2 }}
-                            >
-                                Descargar Reporte
-                            </Button>
-                            <Menu
-                                anchorEl={anchorEl}
-                                open={Boolean(anchorEl)}
-                                onClose={handleMenuClose}
-                            >
-                                <MenuItem onClick={() => { generatePDF(true); handleMenuClose(); }}>
-                                    Usuarios Activos
-                                </MenuItem>
-                                <MenuItem onClick={() => { generatePDF(false); handleMenuClose(); }}>
-                                    Usuarios Inactivos
-                                </MenuItem>
-                            </Menu>
+                                                    <Button
+                            onClick={handleMenuClick}
+                            startIcon={<DownloadOutlined />}
+                            variant='contained'
+                            color='secondary'
+                            sx={{ ml: 2 }}
+                        >
+                            Descargar Reporte
+                        </Button>
+                        <Menu
+                            anchorEl={anchorEl}
+                            open={Boolean(anchorEl)}
+                            onClose={handleMenuClose}
+                        >
+                            <MenuItem onClick={() => { generatePDF('stockBajo'); handleMenuClose(); }}>
+                                Fármacos con Stock Bajo
+                            </MenuItem>
+                            <MenuItem onClick={() => { generatePDF('prontosAVencer'); handleMenuClose(); }}>
+                                Fármacos Prontos a Vencer
+                            </MenuItem>
+                        </Menu>
                         </Grid>
                     )}
                 </Grid>
