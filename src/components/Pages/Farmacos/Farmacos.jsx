@@ -621,11 +621,11 @@ const Farmaco = () => {
     </Dialog>
 
         {/* Página de Usuarios */}
-        <Page title="Chapina | Usuarios">
+        <Page title="Chapina | Farmacos">
             <ToastAutoHide message={mensaje} />
             <Container maxWidth='lg'>
                 <Box sx={{ pb: 5 }}>
-                    <Typography variant="h4">Lista de usuarios</Typography>
+                    <Typography variant="h4">Lista de Farmacos</Typography>
                 </Box>
                 <Grid container spacing={2} justifyContent="space-between" alignItems="center">
                     {userRole === 'ADMIN' && (

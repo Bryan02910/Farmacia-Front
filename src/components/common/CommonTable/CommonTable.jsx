@@ -24,7 +24,7 @@ const CommonTable = ({ data, columns }) => {
             <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#444' }}>
                 Datos:
             </Typography>
-            <Box sx={{ height: 400, width: '100%' }}>
+            <Box sx={{ height: 500, width: '100%' }}> {/* Aumenta la altura del contenedor */}
                 <DataGrid
                     autoHeight
                     rows={data}
