@@ -66,7 +66,7 @@ const sidebarConfig = [
     children: [
       {
         title: 'Nueva Compra',
-        path: '/app/compras/nueva',
+        path: '/app/compras',
         icon: <ShoppingCartOutlined />,
       },
       {
