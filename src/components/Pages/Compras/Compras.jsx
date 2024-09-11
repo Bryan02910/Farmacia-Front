@@ -550,7 +550,7 @@ const Compras = () => {
 
           {/* Total de la compra */}
           <Box sx={{ mt: 4 }}>
-            <Typography variant="h6">Total Compra: ${totalCompra.toFixed(2)}</Typography>
+            <Typography variant="h6">Total Compra: Q{totalCompra.toFixed(2)}</Typography>
           </Box>
 
           {/* Botón para guardar */}
