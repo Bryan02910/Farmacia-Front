@@ -96,6 +96,7 @@ const Farmaco = () => {
         { field: 'nivel_reorden', headerName: 'Nivel de reorden', width: 220 },
         { field: 'proveedor', headerName: 'Proveedor', width: 220 },
         { field: 'laboratorio', headerName: 'Laboratorio', width: 220 },
+        { field: 'stock_total_calculado', headerName: 'Stock actual', width: 220 },
         {
             field: '',
             headerName: 'Acciones',
@@ -130,7 +131,7 @@ const Farmaco = () => {
             const userToDelete = usuariosList.find(user => user.id === idDelete);
             setDeletedUsers(prev => [...prev, userToDelete]);
 
-            const { data } = await ApiRequest().post('/eliminar', { id: idDelete });
+            const { data } = await ApiRequest().post('/eliminar_farmaco', { id: idDelete });
             setMensaje({
                 ident: new Date().getTime(),
                 message: data.message,
