@@ -444,164 +444,197 @@ const Farmaco = () => {
                 {/* Mostrar campos según la selección */}
                 {presentationType === 'caja' && (
                     <>
-                        <Grid item xs={12}>
-                            <TextField
-                                margin='normal'
-                                name='precio_caja'
-                                value={body.precio_caja}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                fullWidth
-                                label='Precio compra caja'
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                margin='normal'
-                                name='precio_venta_caja'
-                                value={body.precio_venta_caja}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                fullWidth
-                                label='Precio venta caja'
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                margin='normal'
-                                name='stock_caja'
-                                value={body.stock_caja}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                fullWidth
-                                label='Stock de cajas'
-                            />
-                        </Grid>
+                         <Grid item xs={12} >
+                      <TextField
+                        fullWidth
+                        label="Precio Caja"
+                        name="precio_caja"
+                        value={body.precio_caja}
+                        onChange={onChange}
+                        type="number"
+                         size='small'
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} >
+                    <TextField
+                      label="Precio Venta Caja"
+                      name="precio_venta_caja"
+                      value={body.precio_venta_caja}
+                      onChange={onChange}
+                      fullWidth
+                      variant="outlined"
+                      type="number"
+                      size='small'
+                    />
+                  </Grid>
+
+                    <Grid item xs={12} >
+                      <TextField
+                        fullWidth
+                        label="Stock Caja"
+                        name="stock_caja"
+                        value={body.stock_caja}
+                        onChange={onChange}
+                        type="number"
+                        size='small'
+                        variant="outlined"
+                      />
+                    </Grid>
+            
+
+                  
+                  <Grid item xs={12} >
+                  <TextField
+                    label="Blisters por Caja"
+                    name="blisters_por_caja"
+                    value={body.blisters_por_caja}
+                    onChange={onChange}
+                    fullWidth
+                    variant="outlined"
+                    size='small'
+                    type="number"
+                  />
+                </Grid>
+
+                <Grid item xs={12} >
+                  <TextField
+                    label="Unidades por Blister"
+                    name="unidades_por_blister"
+                    value={body.unidades_por_blister}
+                    onChange={onChange}
+                    fullWidth
+                    size='small'
+                    variant="outlined"
+                    type="number"
+                  />
+                </Grid>
+
+                <Grid item xs={12}>
+                <TextField
+                  label="Stock en Cajas"
+                  name="stock_caja"
+                  value={body.stock_caja}
+                  onChange={onChange}
+                  fullWidth
+                  size='small'
+                  variant="outlined"
+                  type="number"
+                />
+                </Grid>
+
                     </>
                 )}
 
                 {presentationType === 'blister' && (
                     <>
-                        <Grid item xs={12}>
-                            <TextField
-                                margin='normal'
-                                name='precio_blister'
-                                value={body.precio_blister}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                fullWidth
-                                label='Precio compra blister'
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                margin='normal'
-                                name='precio_venta_blister'
-                                value={body.precio_venta_blister}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                fullWidth
-                                label='Precio venta blister'
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                margin='normal'
-                                name='stock_blister'
-                                value={body.stock_blister}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                fullWidth
-                                label='Stock blister'
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                margin='normal'
-                                name='blister_por_caja'
-                                value={body.blister_por_caja}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                fullWidth
-                                label='Blisters por caja'
-                            />
-                        </Grid>
+                       <Grid item xs={12} >
+                      <TextField
+                        fullWidth
+                        label="Precio Blister"
+                        name="precio_blister"
+                        value={body.precio_blister}
+                        onChange={onChange}
+                        type="number"
+                        size='small'
+                        
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} >
+                    <TextField
+                      label="Precio Venta Blister"
+                      name="precio_venta_blister"
+                      value={body.precio_venta_blister}
+                      onChange={onChange}
+                      fullWidth
+                      variant="outlined"
+                      type="number"
+                      size='small'
+                    />
+                  </Grid>
+
+                    <Grid item xs={12} >
+                      <TextField
+                        fullWidth
+                        label="Stock Blister"
+                        name="stock_blister"
+                        value={body.stock_blister}
+                        onChange={onChange}
+                        type="number"
+                        size='small'
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} >
+                    <TextField
+                      label="Unidades por Blister"
+                      name="unidades_por_blister"
+                      value={body.unidades_por_blister}
+                      onChange={onChange}
+                      fullWidth
+                      variant="outlined"
+                      type="number"
+                      size='small'
+                    />
+                  </Grid>
                     </>
                 )}
 
                 {presentationType === 'unidad' && (
                     <>
-                        <Grid item xs={12}>
-                            <TextField
-                                margin='normal'
-                                name='precio_unidad'
-                                value={body.precio_unidad}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                fullWidth
-                                label='Precio compra unidad'
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                margin='normal'
-                                name='precio_venta_unidad'
-                                value={body.precio_venta_unidad}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                fullWidth
-                                label='Precio venta unidad'
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                margin='normal'
-                                name='stock_unidad'
-                                value={body.stock_unidad}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                fullWidth
-                                label='Stock unidades'
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <TextField
-                                margin='normal'
-                                name='unidades_por_blister'
-                                value={body.unidades_por_blister}
-                                onChange={onChange}
-                                variant='outlined'
-                                size='small'
-                                fullWidth
-                                label='Unidades por blister'
-                            />
-                        </Grid>
+                    <Grid item xs={12} >
+                      <TextField
+                        fullWidth
+                        label="Precio Unidad"
+                        name="precio_unidad"
+                        value={body.precio_unidad}
+                        onChange={onChange}
+                        type="number"
+                        size='small'
+                      />
+                    </Grid>
+
+                    <Grid item xs={12} >
+                    <TextField
+                      label="Precio Venta Unidad"
+                      name="precio_venta_unidad"
+                      value={body.precio_venta_unidad}
+                      onChange={onChange}
+                      fullWidth
+                      variant="outlined"
+                      type="number"
+                      size='small'
+                    />
+                  </Grid>
+
+                    <Grid item xs={12} >
+                      <TextField
+                        fullWidth
+                        label="Stock Unidad"
+                        name="stock_unidad"
+                        value={body.stock_unidad}
+                        onChange={onChange}
+                        type="number"
+                        size='small'
+                      />
+                    </Grid>
                     </>
                 )}
 
-                <Grid item xs={12} sm={12}>
-                    <TextField
-                        type='date'
-                        margin='normal'
-                        name='fecha_vencimiento'
-                        value={formatDate(body.fecha_vencimiento)}  // Formatea la fecha
-                        onChange={onChange}
-                        variant='outlined'
-                        size='small'
-                        color='primary'
-                        fullWidth
-                        label='Fecha vencimiento'
-                    />
+                <Grid item xs={12} >
+                  <TextField
+                    label="Fecha de Vencimiento"
+                    name="fecha_vencimiento"
+                    onChange={onChange}
+                    fullWidth
+                    size='small'
+                    variant="outlined"
+                    type="date"
+                    InputLabelProps={{
+                      shrink: true,
+                    }}
+                  />
                 </Grid>
                 <Grid item xs={12}>
                  <Grid item xs={12}>
