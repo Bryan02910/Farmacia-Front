@@ -9,34 +9,28 @@ const DRAWER_WIDTH = 280
 
 const RootStyle = styled('div')({
 	display: 'flex',
-	minHeight: '100%',
-	overflow: 'hidden'
+	minHeight: '100vh', // Para asegurar que ocupe el 100% de la altura de la ventana
+	overflow: 'hidden',
+	backgroundColor: '#f9f9f9' // Fondo sutil para una mejor apariencia
 })
 
 const MainStyle = styled('div', { shouldForwardProp: (prop) => prop !== 'open' })(
 	({ theme, open }) => ({
 		flexGrow: 1,
-		overflow: 'hidden',
+		overflow: 'auto', // Cambio a 'auto' para permitir el scroll si es necesario
 		minHeight: '100%',
 		paddingTop: APP_BAR_MOBILE + 24,
 		paddingBottom: theme.spacing(10),
+		paddingLeft: theme.spacing(2),
+		paddingRight: theme.spacing(2),
 		[theme.breakpoints.up('lg')]: {
 			paddingTop: APP_BAR_DESKTOP + 24,
-			paddingLeft: theme.spacing(2),
-			paddingRight: theme.spacing(2)
 		},
-		transition: theme.transitions.create('margin', {
-			easing: theme.transitions.easing.sharp,
-			duration: theme.transitions.duration.leavingScreen
+		transition: theme.transitions.create(['margin', 'padding'], {
+			easing: theme.transitions.easing.easeOut,
+			duration: theme.transitions.duration.standard
 		}),
-		marginLeft: `-${DRAWER_WIDTH}px`,
-		...(open && {
-			transition: theme.transitions.create('margin', {
-				easing: theme.transitions.easing.easeOut,
-				duration: theme.transitions.duration.enteringScreen
-			}),
-			marginLeft: 0
-		})
+		marginLeft: open ? 0 : `-${DRAWER_WIDTH}px`, // Si el menú está cerrado, se ajusta el margen
 	})
 )
 
@@ -48,8 +42,18 @@ const Layout = ({ children }) => {
 
 	return (
 		<RootStyle>
-			<Header onOpenSidebar={() => setOpenMobile(true)} isOpenSidebarDesktop={openDesktop} onSidebarDesktop={() => setOpenDesktop(prev => !prev)} />
-			<MenuApp isOpenSidebar={openMobile} onCloseSidebar={() => setOpenMobile(false)} isOpenSidebarDesktop={openDesktop} />
+			<Header
+				onOpenSidebar={() => setOpenMobile(true)}
+				isOpenSidebarDesktop={openDesktop}
+				onSidebarDesktop={() => setOpenDesktop((prev) => !prev)}
+			/>
+			
+			<MenuApp
+				isOpenSidebar={openMobile}
+				onCloseSidebar={() => setOpenMobile(false)}
+				isOpenSidebarDesktop={openDesktop}
+			/>
+			
 			<MainStyle open={openDesktop}>
 				{children}
 			</MainStyle>

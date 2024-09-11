@@ -1,5 +1,5 @@
-import React from 'react';
-import { Card, LinearProgress, Typography, Box } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { LinearProgress, Typography, Box, TextField } from '@mui/material';
 import { DataGrid, GridOverlay } from '@mui/x-data-grid';
 
 function CustomLoadingOverlay() {
@@ -13,21 +13,45 @@ function CustomLoadingOverlay() {
 }
 
 const CommonTable = ({ data, columns }) => {
+    const [searchText, setSearchText] = useState('');
+    const [filteredRows, setFilteredRows] = useState(data);
+
+    useEffect(() => {
+        // Cuando los datos cambien, se reinicia el estado de las filas filtradas.
+        setFilteredRows(data);
+    }, [data]);
+
+    const handleSearch = (event) => {
+        const value = event.target.value.toLowerCase();
+        setSearchText(value);
+
+        const filteredData = data.filter((row) =>
+            columns.some((column) => {
+                const cellValue = row[column.field]; 
+                // Asegurarse de que no sea undefined o null
+                return cellValue && String(cellValue).toLowerCase().includes(value);
+            })
+        );
+        setFilteredRows(filteredData);
+    };
+
     return (
-        <Card sx={{
-            p: 3,
-            borderRadius: 4,
-            boxShadow: 5,
-            backgroundColor: '#f9f9f9', /* Fondo más claro para la tarjeta */
-            border: '1px solid #ddd', /* Borde sutil para dar definición */
-        }}>
+        <Box sx={{ p: 2 }}>
             <Typography variant="h5" sx={{ mb: 2, fontWeight: 'bold', color: '#444' }}>
                 Datos:
             </Typography>
-            <Box sx={{ height: 500, width: '100%' }}> {/* Aumenta la altura del contenedor */}
+            {/* Campo de búsqueda */}
+            <TextField
+                label="Buscar"
+                variant="outlined"
+                value={searchText}
+                onChange={handleSearch}
+                sx={{ mb: 2, width: '100%' }}
+            />
+            <Box sx={{ height: 500, width: '100%' }}>
                 <DataGrid
                     autoHeight
-                    rows={data}
+                    rows={filteredRows}
                     columns={columns}
                     pageSize={10}
                     rowsPerPageOptions={[10, 20, 50]}
@@ -38,37 +62,39 @@ const CommonTable = ({ data, columns }) => {
                     }}
                     sx={{
                         '& .MuiDataGrid-columnHeaders': {
-                            backgroundColor: '#e0e0e0', /* Color de fondo para el encabezado */
+                            backgroundColor: '#e0e0e0',
                             color: '#333',
                             fontWeight: 'bold',
-                            borderBottom: '2px solid #ccc', /* Línea inferior más gruesa */
+                            borderBottom: '2px solid #ccc',
                         },
                         '& .MuiDataGrid-cell': {
                             borderBottom: '1px solid #e0e0e0',
-                            padding: '8px', /* Espaciado interno para celdas */
-                            fontSize: '0.875rem', /* Tamaño de fuente ajustado */
+                            padding: '8px',
+                            fontSize: '0.875rem',
                         },
                         '& .MuiDataGrid-footerContainer': {
                             borderTop: '1px solid #ccc',
-                            backgroundColor: '#f1f1f1', /* Fondo para la parte inferior */
+                            backgroundColor: '#f1f1f1',
                         },
                         '& .MuiPaginationItem-root': {
                             fontWeight: 'bold',
-                            color: '#1976d2', /* Color azul para los elementos de paginación */
+                            color: '#1976d2',
                         },
                         '& .MuiDataGrid-virtualScroller': {
                             backgroundColor: '#ffffff',
                         },
                         '& .MuiDataGrid-row:hover': {
-                            backgroundColor: '#f0f8ff', /* Color de fondo al pasar el mouse */
+                            backgroundColor: '#f0f8ff',
                         },
                         '& .MuiDataGrid-selectedRowCount': {
-                            color: '#1976d2', /* Color para la cuenta de filas seleccionadas */
+                            color: '#1976d2',
                         },
                     }}
+                    columnBuffer={2}
+                    autoWidth
                 />
             </Box>
-        </Card>
+        </Box>
     );
 }
 

@@ -1,12 +1,10 @@
-import React, { useState } from 'react'
-import PropTypes from 'prop-types'
-import { NavLink as RouterLink, matchPath, useLocation } from 'react-router-dom'
-// material
-import { alpha, useTheme, styled } from '@mui/material/styles'
-import { Box, List, Collapse, ListItemText, ListItemIcon, ListItemButton } from '@mui/material'
-import ArrowBackIosNewOutlinedIcon from '@mui/icons-material/ArrowBackIosNewOutlined'
-
-// ----------------------------------------------------------------------
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import { NavLink as RouterLink, useLocation } from 'react-router-dom';
+import { alpha, useTheme, styled } from '@mui/material/styles';
+import { Box, List, Collapse, ListItemText, ListItemIcon, ListItemButton } from '@mui/material';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 
 const ListItemStyle = styled((props) => <ListItemButton disableGutters {...props} />)(
 	({ theme }) => ({
@@ -14,91 +12,83 @@ const ListItemStyle = styled((props) => <ListItemButton disableGutters {...props
 		height: 48,
 		position: 'relative',
 		textTransform: 'capitalize',
-		paddingLeft: theme.spacing(5),
-		paddingRight: theme.spacing(2.5),
+		paddingLeft: theme.spacing(3),
+		paddingRight: theme.spacing(2),
 		color: theme.palette.text.secondary,
-		'&:before': {
-			top: 0,
-			right: 0,
-			width: 3,
-			bottom: 0,
-			content: "''",
-			display: 'none',
-			position: 'absolute',
-			borderTopLeftRadius: 4,
-			borderBottomLeftRadius: 4,
-			backgroundColor: theme.palette.primary.main
+		borderRadius: '8px',
+		marginBottom: theme.spacing(1),
+		transition: theme.transitions.create('all', {
+			duration: theme.transitions.duration.shortest
+		}),
+		'&:hover': {
+			backgroundColor: alpha(theme.palette.primary.light, 0.1),
+			color: theme.palette.primary.main,
+			'& .MuiListItemIcon-root': {
+				color: theme.palette.primary.main
+			}
 		}
 	})
-)
+);
 
-const ListItemIconStyle = styled(ListItemIcon)({
-	width: 22,
-	height: 22,
-	display: 'flex',
-	alignItems: 'center',
-	justifyContent: 'center'
-})
+const ListItemIconStyle = styled(ListItemIcon)(({ theme }) => ({
+	width: 28,
+	height: 28,
+	color: theme.palette.text.secondary,
+	transition: theme.transitions.create('color', {
+		duration: theme.transitions.duration.shortest
+	})
+}));
 
-// ----------------------------------------------------------------------
-
-NavItem.propTypes = {
-	item: PropTypes.object,
-	active: PropTypes.func
-}
-
-function NavItem({ item, active, isOpenSidebarDesktop }) {
-	const theme = useTheme()
-	const isActiveRoot = active(item.path)
-	const { title, path, icon, info, children } = item
-	const [open, setOpen] = useState(isActiveRoot)
+function NavItem({ item, active }) {
+	const theme = useTheme();
+	const isActiveRoot = active(item.path);
+	const { title, path, icon, info, children } = item;
+	const [open, setOpen] = useState(isActiveRoot);
 
 	const handleOpen = () => {
-		setOpen((prev) => !prev)
-	}
+		setOpen((prev) => !prev);
+	};
 
 	const activeRootStyle = {
-		color: 'primary.main',
-		fontWeight: 'fontWeightMedium',
-		bgcolor: alpha(theme.palette.primary.main, theme.palette.action.selectedOpacity),
-		'&:before': { display: 'block' }
-	}
+		color: theme.palette.primary.main,
+		backgroundColor: alpha(theme.palette.primary.light, 0.2),
+		fontWeight: 'bold',
+		'& .MuiListItemIcon-root': {
+			color: theme.palette.primary.main
+		}
+	};
 
 	const activeSubStyle = {
-		color: 'text.primary',
-		fontWeight: 'fontWeightMedium'
-	}
+		color: theme.palette.primary.main,
+		fontWeight: 'bold',
+		'& .MuiListItemIcon-root': {
+			color: theme.palette.primary.main
+		}
+	};
 
 	if (children) {
 		return (
 			<>
-				<ListItemStyle
-					onClick={handleOpen}
-					sx={{
-						...(isActiveRoot && activeRootStyle)
-					}}
-				>
+				<ListItemStyle onClick={handleOpen} sx={isActiveRoot ? activeRootStyle : {}}>
 					<ListItemIconStyle>{icon && icon}</ListItemIconStyle>
 					<ListItemText primary={title} />
-					{info && info}
-					<Box
-						icon={open ? <ArrowBackIosNewOutlinedIcon /> : <ArrowBackIosNewOutlinedIcon />}
-						sx={{ width: 16, height: 16, ml: 1 }}
-					/>
+					<Box sx={{ display: 'flex', alignItems: 'center' }}>
+						{open ? <ArrowDropDownIcon /> : <ArrowRightIcon />}
+					</Box>
 				</ListItemStyle>
 
 				<Collapse in={open} timeout="auto" unmountOnExit>
 					<List component="div" disablePadding>
-						{children.map((item) => {
-							const { title, path } = item
-							const isActiveSub = active(path)
+						{children.map((subItem) => {
+							const isActiveSub = active(subItem.path);
 
 							return (
 								<ListItemStyle
-									key={title}
+									key={subItem.title}
 									component={RouterLink}
-									to={path}
+									to={subItem.path}
 									sx={{
+										paddingLeft: theme.spacing(5),
 										...(isActiveSub && activeSubStyle)
 									}}
 								>
@@ -106,53 +96,45 @@ function NavItem({ item, active, isOpenSidebarDesktop }) {
 										<Box
 											component="span"
 											sx={{
-												width: 4,
-												height: 4,
+												width: 6,
+												height: 6,
 												display: 'flex',
 												borderRadius: '50%',
-												alignItems: 'center',
-												justifyContent: 'center',
-												bgcolor: 'text.disabled',
-												transition: (theme) => theme.transitions.create('transform'),
-												...(isActiveSub && {
-													transform: 'scale(2)',
-													bgcolor: 'primary.main'
+												bgcolor: isActiveSub ? 'primary.main' : 'text.disabled',
+												transition: theme.transitions.create('background-color', {
+													duration: theme.transitions.duration.shortest
 												})
 											}}
 										/>
 									</ListItemIconStyle>
-									<ListItemText disableTypography primary={title} />
+									<ListItemText disableTypography primary={subItem.title} />
 								</ListItemStyle>
-							)
+							);
 						})}
 					</List>
 				</Collapse>
 			</>
-		)
+		);
 	}
 
 	return (
-		<ListItemStyle
-			component={RouterLink}
-			to={path}
-			sx={{
-				...(isActiveRoot && activeRootStyle)
-			}}
-		>
+		<ListItemStyle component={RouterLink} to={path} sx={isActiveRoot ? activeRootStyle : {}}>
 			<ListItemIconStyle>{icon && icon}</ListItemIconStyle>
 			<ListItemText disableTypography primary={title} />
 			{info && info}
 		</ListItemStyle>
-	)
+	);
 }
 
-NavSection.propTypes = {
-	navConfig: PropTypes.array
-}
+NavItem.propTypes = {
+	item: PropTypes.object.isRequired,
+	active: PropTypes.func.isRequired
+};
 
 export default function NavSection({ navConfig, ...other }) {
-	const { pathname } = useLocation()
-	const match = (path) => (path === pathname ? true : `${path}/form` === pathname ? true  : false)
+	const { pathname } = useLocation();
+
+	const match = (path) => path === pathname || `${path}/form` === pathname;
 
 	return (
 		<Box {...other}>
@@ -162,5 +144,9 @@ export default function NavSection({ navConfig, ...other }) {
 				))}
 			</List>
 		</Box>
-	)
+	);
 }
+
+NavSection.propTypes = {
+	navConfig: PropTypes.array.isRequired
+};

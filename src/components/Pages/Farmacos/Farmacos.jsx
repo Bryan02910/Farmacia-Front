@@ -93,6 +93,7 @@ const Farmaco = () => {
 			  return fecha.toLocaleDateString('es-ES', options); // Ajusta 'es-ES' al idioma deseado
 			},
 		  },
+        { field: 'nivel_reorden', headerName: 'Nivel de reorden', width: 220 },
         { field: 'proveedor', headerName: 'Proveedor', width: 220 },
         { field: 'laboratorio', headerName: 'Laboratorio', width: 220 },
         {
@@ -326,6 +327,15 @@ const Farmaco = () => {
         console.error('Error fetching proveedores data:', error);
         }
     };
+
+    const formatDate = (date) => {
+        if (!date) return '';
+        const d = new Date(date);
+        const month = ('0' + (d.getMonth() + 1)).slice(-2);
+        const day = ('0' + d.getDate()).slice(-2);
+        return d.getFullYear() + '-' + month + '-' + day;
+    };
+    
 
     useEffect(() => {
         fetchLab(); // Fetch marca options when the component mounts.
@@ -578,7 +588,33 @@ const Farmaco = () => {
                     </>
                 )}
 
+                <Grid item xs={12} sm={12}>
+                    <TextField
+                        type='date'
+                        margin='normal'
+                        name='fecha_vencimiento'
+                        value={formatDate(body.fecha_vencimiento)}  // Formatea la fecha
+                        onChange={onChange}
+                        variant='outlined'
+                        size='small'
+                        color='primary'
+                        fullWidth
+                        label='Fecha vencimiento'
+                    />
+                </Grid>
                 <Grid item xs={12}>
+                 <Grid item xs={12}>
+                    <TextField
+                        margin='normal'
+                        name='nivel_reorden'
+                        value={body.nivel_reorden}
+                        onChange={onChange}
+                        variant='outlined'
+                        size='small'
+                        fullWidth
+                        label='Nivel de reorden'
+                    />
+                </Grid>
                     <InputLabel htmlFor="proveedor_id">Proveedor</InputLabel>
                     <Select
                         name="proveedor_id"
