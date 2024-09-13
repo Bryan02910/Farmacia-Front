@@ -626,6 +626,7 @@ const Farmaco = () => {
                   <TextField
                     label="Fecha de Vencimiento"
                     name="fecha_vencimiento"
+                    value={formatDate(body.fecha_vencimiento)}
                     onChange={onChange}
                     fullWidth
                     size='small'
