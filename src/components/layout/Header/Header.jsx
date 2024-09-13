@@ -17,35 +17,36 @@ const APPBAR_DESKTOP = 64
 
 const RootStyle = styled(AppBar, { shouldForwardProp: (prop) => prop !== 'open' })(
 	({ theme, open }) => ({
-		backgroundColor: '#00bcd4', // Cambia el color de fondo a celeste
-		color: '#ffffff', // Cambia el color del texto a blanco
-		transition: theme.transitions.create('margin', {
-			easing: theme.transitions.easing.sharp,
-			duration: theme.transitions.duration.leavingScreen
+	  backgroundColor: '#00bcd4', // Color celeste
+	  color: '#ffffff', // Texto blanco
+	  boxShadow: '0px 4px 20px rgba(0, 0, 0, 0.1)', // Sombras suaves
+	  transition: theme.transitions.create(['margin', 'width'], {
+		easing: theme.transitions.easing.sharp,
+		duration: theme.transitions.duration.leavingScreen,
+	  }),
+	  [theme.breakpoints.up('lg')]: {
+		width: `calc(100% - ${open ? DRAWER_WIDTH : 0}px)`,
+	  },
+	  ...(open && {
+		transition: theme.transitions.create(['margin', 'width'], {
+		  easing: theme.transitions.easing.easeOut,
+		  duration: theme.transitions.duration.enteringScreen,
 		}),
-		[theme.breakpoints.up('lg')]: {
-			width: `100%px`
-		},
-		...(open && {
-			transition: theme.transitions.create('margin', {
-				easing: theme.transitions.easing.easeOut,
-				duration: theme.transitions.duration.enteringScreen
-			}),
-			[theme.breakpoints.up('lg')]: {
-				width: `calc(100% - ${DRAWER_WIDTH + 1}px)`
-			}
-		})
+	  }),
 	})
-)
+  );
+  
 
-const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
+  const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
 	minHeight: APPBAR_MOBILE,
 	[theme.breakpoints.up('lg')]: {
-		minHeight: APPBAR_DESKTOP,
-		padding: theme.spacing(0, 5)
-	}
-}))
-
+	  minHeight: APPBAR_DESKTOP,
+	  padding: theme.spacing(0, 3), // Menos padding para una barra más compacta
+	},
+	display: 'flex',
+	justifyContent: 'space-between', // Alineación de los elementos
+  }));
+  
 // ----------------------------------------------------------------------
 
 const Header = ({ onOpenSidebar, isOpenSidebarDesktop, onSidebarDesktop }) => {
@@ -106,26 +107,30 @@ const Header = ({ onOpenSidebar, isOpenSidebarDesktop, onSidebarDesktop }) => {
 						open={openMenu}
 						onClose={handleClose}>
 						<MenuItem>
-							<List>
-								<ListItem>
-									<ListItemAvatar>
-										<Avatar src={user.picture} alt='...' />
-									</ListItemAvatar>
-									<ListItemText primary={<div>
-										<Typography align='center'>{user.user}</Typography>
-										<Typography align='center'><b>{user.rol}</b></Typography>
-									</div>} />
-								</ListItem>
-							</List>
-						</MenuItem>
-						<Divider />
-						<MenuItem onClick={() => {
-							globalDispatch({ type: APP_STATE.CLEAR_APP_STATE })
-							localStorage.clear()
-							push('/login')
-						}}>
-							<ExitToAppOutlinedIcon />&nbsp;&nbsp;&nbsp;
-							Cerrar sesión
+						<List>
+						<ListItem sx={{ padding: '10px' }}> {/* Más padding para mejor separación */}
+						<ListItemAvatar>
+							<Avatar src={user.picture} alt="User Avatar" />
+						</ListItemAvatar>
+						<ListItemText 
+							primary={
+							<div style={{ textAlign: 'center' }}>
+								<Typography variant="body1">{user.user}</Typography>
+								<Typography variant="subtitle2" color="textSecondary"><b>{user.rol}</b></Typography>
+							</div>
+							} 
+						/>
+						</ListItem>
+					</List>
+					</MenuItem>
+					<Divider />
+					<MenuItem onClick={() => {
+					globalDispatch({ type: APP_STATE.CLEAR_APP_STATE });
+					localStorage.clear();
+					push('/login');
+					}} sx={{ justifyContent: 'center', padding: '10px 20px' }}>
+					<ExitToAppOutlinedIcon sx={{ marginRight: 1 }} />
+					<Typography variant="body2">Cerrar sesión</Typography>
 						</MenuItem>
 					</Menu>
 				</Stack>

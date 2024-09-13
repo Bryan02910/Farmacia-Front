@@ -7,7 +7,7 @@ import { Link } from 'react-router-dom'
 const NotFound = () => {
 
 	return (
-		<Page title="SAMUS | 404">
+		<Page title="Chapina | 404">
 			<div style={{
 				backgroundImage: 'url(https://pa1.narvii.com/7243/d15ff24b7642ca9deedc8ca7947185c0926718b0r1-600-600_hq.gif)',
 				backgroundPosition: 'center',
