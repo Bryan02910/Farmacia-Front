@@ -103,13 +103,118 @@ const Compras = () => {
     calculateTotalCompra(updatedFarmacos); // Recalcular total
   };
 
-  const onChangeFarmaco = (index, { target }) => {
+  const fetchFarmacoById = async (id) => {
+    try {
+      const { data } = await ApiRequest().get(`/farmaco/${id}`);
+      return data;
+    } catch (error) {
+      console.error('Error al obtener el fármaco por ID:', error.response ? error.response.data : error.message);
+      throw error;
+    }
+  };
+  
+
+  /*const onChangeFarmaco = (index, { target }) => {
     const { name, value } = target;
     const updatedFarmacos = [...farmacos];
     updatedFarmacos[index][name] = value;
     setFarmacos(updatedFarmacos);
     calculateTotalCompra(updatedFarmacos); // Calcular total al cambiar fármacos
+  };*/
+
+  const onChangeFarmaco = async (index, { target }) => {
+    const { name, value } = target;
+    const updatedFarmacos = [...farmacos];
+  
+    // Si se cambia el campo ID, hacer la solicitud para obtener los datos del fármaco
+    if (name === "id" && value) {
+      try {
+        // Realizar solicitud para obtener los datos del fármaco por ID
+        const { data } = await ApiRequest().get(`/farmaco/${value}`);
+  
+        // Verificar si se encontraron datos para el ID proporcionado
+        if (data) {
+          // Actualizar los datos del fármaco en base a la respuesta
+          updatedFarmacos[index] = {
+            ...updatedFarmacos[index],
+            ...data, // Asignar todos los datos del fármaco
+          };
+        } else {
+          // ID no encontrado, limpiar los campos del fármaco
+          updatedFarmacos[index] = {
+            ...updatedFarmacos[index],
+            id: value,
+            nombre: '',
+            descripcion: '',
+            precio_caja: '',
+            precio_blister: '',
+            precio_unidad: '',
+            precio_venta_caja: '',
+            precio_venta_blister: '',
+            precio_venta_unidad: '',
+            blisters_por_caja: '',
+            unidades_por_blister: '',
+            stock_caja: '',
+            stock_blister: '',
+            stock_unidad: '',
+            nivel_reorden: '',
+            codigo_barras: '',
+            proveedor_id: '',
+            laboratorio_id: '',
+            fecha_vencimiento: '',
+            presentacion: 'caja', // Ajustar según sea necesario
+          };
+        }
+  
+        // Actualizar estado con los datos obtenidos o limpiados
+        setFarmacos(updatedFarmacos);
+      } catch (error) {
+        // Manejo del error, por ejemplo, mostrar un mensaje de error
+        setMensaje({
+          ident: new Date().getTime(),
+          message: 'Error al obtener los datos del fármaco',
+          type: 'error',
+        });
+  
+        // Limpiar los campos del fármaco si el ID no es válido
+        if (error.response?.status === 404) {
+          updatedFarmacos[index] = {
+            ...updatedFarmacos[index],
+            id: value,
+            nombre: '',
+            descripcion: '',
+            precio_caja: '',
+            precio_blister: '',
+            precio_unidad: '',
+            precio_venta_caja: '',
+            precio_venta_blister: '',
+            precio_venta_unidad: '',
+            blisters_por_caja: '',
+            unidades_por_blister: '',
+            stock_caja: '',
+            stock_blister: '',
+            stock_unidad: '',
+            nivel_reorden: '',
+            codigo_barras: '',
+            proveedor_id: '',
+            laboratorio_id: '',
+            fecha_vencimiento: '',
+            presentacion: 'caja', // Ajustar según sea necesario
+          };
+          setFarmacos(updatedFarmacos);
+        }
+      }
+    } else {
+      // Si no es el ID, actualizar el valor normalmente
+      updatedFarmacos[index][name] = value;
+      setFarmacos(updatedFarmacos);
+    }
+  
+    // Recalcular total de la compra
+    calculateTotalCompra(updatedFarmacos);
   };
+  
+  
 
   const onChangePresentacion = (index, value) => {
     const updatedFarmacos = [...farmacos];
