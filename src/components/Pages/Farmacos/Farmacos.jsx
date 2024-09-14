@@ -510,18 +510,7 @@ const Farmaco = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12}>
-                <TextField
-                  label="Stock en Cajas"
-                  name="stock_caja"
-                  value={body.stock_caja}
-                  onChange={onChange}
-                  fullWidth
-                  size='small'
-                  variant="outlined"
-                  type="number"
-                />
-                </Grid>
+               
 
                     </>
                 )}

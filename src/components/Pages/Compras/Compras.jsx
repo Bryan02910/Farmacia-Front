@@ -7,6 +7,7 @@ import { AddOutlined, DeleteOutline } from '@mui/icons-material';
 import Page from '../../common/Page';
 import ToastAutoHide from '../../common/ToastAutoHide';
 import { MainContext } from '../../../Context/MainContext';
+import { GridFeatureModeConstant } from '@mui/x-data-grid';
 
 const Compras = () => {
   const { globalState } = useContext(MainContext);
@@ -34,6 +35,7 @@ const Compras = () => {
     presentacion: "caja" // Estado para la presentación seleccionada
   }]);
   const [proveedorId, setProveedorId] = useState(''); // Estado para ID del proveedor
+  const [Nofactura, setNofactura] = useState(''); 
   const [proveedores, setProveedores] = useState([]); // Estado para lista de proveedores
   const [laboratorios, setLaboratorios] = useState([]); // Estado para lista de laboratorios
   const [totalCompra, setTotalCompra] = useState(0); // Estado para total
@@ -95,6 +97,14 @@ const Compras = () => {
       presentacion: "caja" // Nueva propiedad para la presentación
     }]);
   };
+
+  const formatDate = (date) => {
+    if (!date) return '';
+    const d = new Date(date);
+    const month = ('0' + (d.getMonth() + 1)).slice(-2);
+    const day = ('0' + d.getDate()).slice(-2);
+    return d.getFullYear() + '-' + month + '-' + day;
+};
 
   const removeFarmaco = (index) => {
     const updatedFarmacos = [...farmacos];
@@ -247,6 +257,7 @@ const Compras = () => {
       const { data } = await ApiRequest().post('/guardar_farmaco_compra', {
         farmacos,
         proveedorId,
+        Nofactura,
         total_compra: totalCompra,
       });
       setMensaje({
@@ -309,6 +320,7 @@ const Compras = () => {
                 <InputLabel id="proveedor-label">Proveedor</InputLabel>
                 <Select
                   labelId="proveedor-label"
+                  name="proveedor_id"
                   value={proveedorId}
                   onChange={(e) => setProveedorId(e.target.value)}
                   label="Proveedor"
@@ -321,6 +333,17 @@ const Compras = () => {
                 </Select>
               </FormControl>
             </Grid>
+
+            <Grid item xs={12} sm={6}>
+                  <TextField
+                    label="No. de factura"
+                    value={Nofactura}
+                    onChange={(e) => setNofactura(e.target.value)}
+                    fullWidth
+                    variant="outlined"
+                  />
+                </Grid>
+
           </Grid>
 
           {/* Fármacos */}
@@ -401,24 +424,7 @@ const Compras = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={4}>
-                  <FormControl fullWidth variant="outlined">
-                    <InputLabel id={`proveedor-label-${index}`}>Proveedor</InputLabel>
-                    <Select
-                      labelId={`proveedor-label-${index}`}
-                      name="proveedor_id"
-                      value={farmaco.proveedor_id}
-                      onChange={(e) => onChangeFarmaco(index, e)}
-                      label="Laboratorio"
-                    >
-                      {proveedores.map((prov) => (
-                        <MenuItem key={prov.id} value={prov.id}>
-                          {prov.nombre}
-                        </MenuItem>
-                      ))}
-                    </Select>
-                  </FormControl>
-                </Grid>
+                
 
                  {/* Selección de Laboratorio */}
                  <Grid item xs={12} sm={4}>
@@ -445,7 +451,7 @@ const Compras = () => {
                   <TextField
                     label="Fecha de Vencimiento"
                     name="fecha_vencimiento"
-                    value={farmaco.fecha_vencimiento}
+                    value={formatDate(farmaco.fecha_vencimiento)}
                     onChange={(e) => onChangeFarmaco(index, e)}
                     fullWidth
                     variant="outlined"
@@ -520,17 +526,7 @@ const Compras = () => {
                   />
                 </Grid>
 
-                <Grid item xs={12} sm={4}>
-                <TextField
-                  label="Stock en Cajas"
-                  name="stock_caja"
-                  value={farmaco.stock_caja}
-                  onChange={(e) => onChangeFarmaco(index, e)}
-                  fullWidth
-                  variant="outlined"
-                  type="number"
-                />
-                </Grid>
+  
 
 
                   </>
