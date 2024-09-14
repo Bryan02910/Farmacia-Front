@@ -39,6 +39,7 @@ const Compras = () => {
   const [proveedores, setProveedores] = useState([]); // Estado para lista de proveedores
   const [laboratorios, setLaboratorios] = useState([]); // Estado para lista de laboratorios
   const [totalCompra, setTotalCompra] = useState(0); // Estado para total
+  const [currentDate, setCurrentDate] = useState(''); // Fecha actual 
   const [mensaje, setMensaje] = useState({ ident: null, message: null, type: null });
 
   // Cargar la lista de proveedores y laboratorios al montar el componente
@@ -288,6 +289,7 @@ const Compras = () => {
         presentacion: "caja" // Reiniciar presentación
       }]); // Reiniciar formulario
       setProveedorId(''); // Reiniciar proveedor
+      setNofactura('');
       setTotalCompra(0); // Reiniciar total
     } catch (error) {
       setMensaje({
@@ -298,10 +300,14 @@ const Compras = () => {
     }
   };
 
+
   useEffect(() => {
     if (globalState.auth && globalState.auth.rol) {
       setUserRole(globalState.auth.rol);
     }
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0]; // Formatear la fecha como YYYY-MM-DD
+    setCurrentDate(formattedDate);
   }, [globalState]);
 
   return (
@@ -315,6 +321,13 @@ const Compras = () => {
 
           {/* Selección de proveedor */}
           <Grid container spacing={2}>
+
+          <Grid item xs={12} sm={6}>
+                <Typography variant="h6">
+                  Fecha de compra: {currentDate}
+                </Typography>
+              </Grid>
+              
             <Grid item xs={12} sm={4}>
               <FormControl fullWidth variant="outlined">
                 <InputLabel id="proveedor-label">Proveedor</InputLabel>
@@ -334,6 +347,7 @@ const Compras = () => {
               </FormControl>
             </Grid>
 
+
             <Grid item xs={12} sm={6}>
                   <TextField
                     label="No. de factura"
@@ -343,13 +357,12 @@ const Compras = () => {
                     variant="outlined"
                   />
                 </Grid>
-
           </Grid>
 
           {/* Fármacos */}
           {farmacos.map((farmaco, index) => (
             <Box key={index} sx={{ mt: 4, border: '1px solid #ccc', padding: 2 }}>
-              <Typography variant="h6">Fármaco {index + 1}</Typography>
+              <Typography variant="h6">Fármaco comprado {index + 1}</Typography>
               <Grid container spacing={2}>
 
                 {/* Selección de Presentación */}
