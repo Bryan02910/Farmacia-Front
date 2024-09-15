@@ -399,7 +399,7 @@ const Compras = () => {
         <ToastAutoHide message={mensaje} />
         <Container maxWidth='lg'>
           <Box sx={{ pb: 5 }}>
-            <Typography variant="h4">Registrar nueva compra</Typography>
+            <Typography variant="h4">Registrar compra</Typography>
           </Box>
 
           {/* Selección de proveedor */}
