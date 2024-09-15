@@ -142,7 +142,7 @@ const Compras = () => {
 
     // Preparar los datos
     const columns = [
-        { header: 'ID', dataKey: 'id' },
+        { header: 'Codigo', dataKey: 'id' },
         { header: 'Nombre', dataKey: 'nombre' },
         { header: 'Descripción', dataKey: 'descripcion' },
         { header: 'Precio Caja', dataKey: 'precio_caja' },
@@ -174,6 +174,7 @@ const Compras = () => {
     doc.setFontSize(12);
     doc.text('Reporte de Compra', 10, 25);
     doc.text(`Fecha de Compra: ${currentDateFormatted}`, 10, 30);
+    doc.text(`No. de factura: ${Nofactura}`, 10, 35);
 
     doc.autoTable({
         columns: columns,
