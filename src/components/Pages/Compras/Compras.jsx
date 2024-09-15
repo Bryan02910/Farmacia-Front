@@ -8,6 +8,9 @@ import Page from '../../common/Page';
 import ToastAutoHide from '../../common/ToastAutoHide';
 import { MainContext } from '../../../Context/MainContext';
 import { GridFeatureModeConstant } from '@mui/x-data-grid';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import imagesList from '../../../assets'
 
 const Compras = () => {
   const { globalState } = useContext(MainContext);
@@ -123,7 +126,80 @@ const Compras = () => {
       throw error;
     }
   };
-  
+
+  const generatePDF = () => {
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+    const imageUrl = imagesList.Logo; // Usar la imagen importada
+    const currentDateFormatted = formatDate(new Date());
+
+    // Añadir imagen
+    const addImage = () => {
+        const imgWidth = 40;
+        const imgHeight = 30;
+        const margin = 10;
+        doc.addImage(imageUrl, 'JPEG', doc.internal.pageSize.getWidth() - imgWidth - margin, margin, imgWidth, imgHeight);
+    };
+
+    // Preparar los datos
+    const columns = [
+        { header: 'ID', dataKey: 'id' },
+        { header: 'Nombre', dataKey: 'nombre' },
+        { header: 'Descripción', dataKey: 'descripcion' },
+        { header: 'Precio Caja', dataKey: 'precio_caja' },
+        { header: 'Stock Caja', dataKey: 'stock_caja' },
+        { header: 'Precio Blister', dataKey: 'precio_blister' },
+        { header: 'Stock Blister', dataKey: 'stock_blister' },
+        { header: 'Precio Unidad', dataKey: 'precio_unidad' },
+        { header: 'Stock Unidad', dataKey: 'stock_unidad' },
+        { header: 'Total', dataKey: 'total' },
+    ];
+
+    const data = farmacos.map(farmaco => ({
+        id: farmaco.id.toString(),
+        nombre: farmaco.nombre,
+        descripcion: farmaco.descripcion,
+        precio_caja: farmaco.precio_caja,
+        stock_caja: farmaco.stock_caja,
+        precio_blister: farmaco.precio_blister,
+        stock_blister: farmaco.stock_blister,
+        precio_unidad: farmaco.precio_unidad,
+        stock_unidad: farmaco.stock_unidad,
+        total: (parseFloat(farmaco.precio_caja) * parseFloat(farmaco.stock_caja)) +
+               (parseFloat(farmaco.precio_blister) * parseFloat(farmaco.stock_blister)) +
+               (parseFloat(farmaco.precio_unidad) * parseFloat(farmaco.stock_unidad)),
+    }));
+
+    // Configurar y generar el PDF
+    addImage();
+    doc.setFontSize(12);
+    doc.text('Reporte de Compra', 10, 25);
+    doc.text(`Fecha de Compra: ${currentDateFormatted}`, 10, 30);
+
+    doc.autoTable({
+        columns: columns,
+        body: data,
+        startY: 35, // Ajustar según el espacio para la imagen y el título
+        margin: { horizontal: 10 },
+        theme: 'grid',
+        styles: {
+            fontSize: 10,
+            cellPadding: 3,
+        },
+        headStyles: {
+            fillColor: [22, 160, 133], // Color de encabezado
+        },
+        didDrawPage: (data) => {
+            addImage(); // Añadir imagen en cada nueva página
+        },
+    });
+
+    // Agregar el total de la compra al final
+    doc.text(`Total Compra: ${totalCompra}`, 10, doc.lastAutoTable.finalY + 10);
+
+    // Descargar el archivo PDF
+    doc.save('reporte_compra.pdf');
+};
+
 
   /*const onChangeFarmaco = (index, { target }) => {
     const { name, value } = target;
@@ -300,6 +376,12 @@ const Compras = () => {
     }
   };
 
+  const handleSaveAndGeneratePDF = () => {
+    onSubmit(); // Ejecutar la función de guardado
+    generatePDF(); // Ejecutar la función para generar el PDF
+};
+
+ 
 
   useEffect(() => {
     if (globalState.auth && globalState.auth.rol) {
@@ -357,6 +439,7 @@ const Compras = () => {
                     variant="outlined"
                   />
                 </Grid>
+
           </Grid>
 
           {/* Fármacos */}
@@ -672,7 +755,7 @@ const Compras = () => {
             <Button
               variant="contained"
               color="primary"
-              onClick={onSubmit}
+              onClick={handleSaveAndGeneratePDF}
             >
               Guardar Compra
             </Button>
