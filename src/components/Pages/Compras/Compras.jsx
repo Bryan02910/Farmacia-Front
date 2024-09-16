@@ -42,6 +42,7 @@ const Compras = () => {
   const [proveedores, setProveedores] = useState([]); // Estado para lista de proveedores
   const [laboratorios, setLaboratorios] = useState([]); // Estado para lista de laboratorios
   const [totalCompra, setTotalCompra] = useState(0); // Estado para total
+  const [totalBlister, setTotalBlister] = useState(0); // Estado para total
   const [currentDate, setCurrentDate] = useState(''); // Fecha actual 
   const [mensaje, setMensaje] = useState({ ident: null, message: null, type: null });
 
@@ -300,6 +301,7 @@ const Compras = () => {
   
     // Recalcular total de la compra
     calculateTotalCompra(updatedFarmacos);
+    calcularStockBlister(updatedFarmacos);
   };
   
   
@@ -328,6 +330,20 @@ const Compras = () => {
     }, 0);
 
     setTotalCompra(total);
+  };
+
+  const calcularStockBlister = (updatedFarmacos) => {
+    const total = updatedFarmacos.reduce((acc, farmaco) => {
+      const stockCaja = parseFloat(farmaco.stock_caja) || 0;
+      const blister_por_caja = parseFloat(farmaco.blisters_por_caja) || 0;
+    
+      const totalBlister = stockCaja * blister_por_caja;
+      
+
+      return totalBlister;
+    }, 0);
+
+    setTotalBlister(total);
   };
 
   const onSubmit = async () => {
@@ -662,7 +678,7 @@ const Compras = () => {
                         fullWidth
                         label="Stock Blister"
                         name="stock_blister"
-                        value={farmaco.stock_blister}
+                        value={totalBlister}
                         onChange={(e) => onChangeFarmaco(index, e)}
                         type="number"
                       />

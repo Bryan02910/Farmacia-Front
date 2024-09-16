@@ -29,7 +29,7 @@ const sidebarConfig = [
     children: [
       {
         title: 'Nueva Venta',
-        path: '/app/ventas/nueva',
+        path: '/app/ventas',
         icon: <ShoppingCartOutlined />,
       },
       {

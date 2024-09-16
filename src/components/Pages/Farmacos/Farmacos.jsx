@@ -44,7 +44,8 @@ const Farmaco = () => {
         fecha_vencimiento: "", 
         fecha_creacion: "", 
         ultima_actualizacion: "",
-        stock_total_calculado: ""
+        stock_total_calculado: "",
+        presentationType: ""
     };
 
     const [usuariosList, setUsuariosList] = useState([]);
