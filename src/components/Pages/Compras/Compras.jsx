@@ -42,7 +42,6 @@ const Compras = () => {
   const [proveedores, setProveedores] = useState([]); // Estado para lista de proveedores
   const [laboratorios, setLaboratorios] = useState([]); // Estado para lista de laboratorios
   const [totalCompra, setTotalCompra] = useState(0); // Estado para total
-  const [totalBlister, setTotalBlister] = useState(0); // Estado para total
   const [currentDate, setCurrentDate] = useState(''); // Fecha actual 
   const [mensaje, setMensaje] = useState({ ident: null, message: null, type: null });
 
