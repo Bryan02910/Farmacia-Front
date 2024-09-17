@@ -165,9 +165,10 @@ const Compras = () => {
         stock_blister: farmaco.stock_blister,
         precio_unidad: farmaco.precio_unidad,
         stock_unidad: farmaco.stock_unidad,
-        total: (parseFloat(farmaco.precio_caja) * parseFloat(farmaco.stock_caja)) +
-               (parseFloat(farmaco.precio_blister) * parseFloat(farmaco.stock_blister)) +
-               (parseFloat(farmaco.precio_unidad) * parseFloat(farmaco.stock_unidad)),
+        total:
+        (parseFloat(farmaco.precio_caja || 0) * parseFloat(farmaco.stock_caja || 0)) +
+        (parseFloat(farmaco.precio_blister || 0) * parseFloat(farmaco.stock_blister || 0)) +
+        (parseFloat(farmaco.precio_unidad || 0) * parseFloat(farmaco.stock_unidad || 0))
     }));
 
     // Configurar y generar el PDF
@@ -301,7 +302,9 @@ const Compras = () => {
   
     // Recalcular total de la compra
     calculateTotalCompra(updatedFarmacos);
-    calcularStockBlister(updatedFarmacos);
+    if (name === 'stock_caja' || name === 'blisters_por_caja') {
+      calcularStockBlister(updatedFarmacos);
+    }
   };
   
   
@@ -333,19 +336,22 @@ const Compras = () => {
   };
 
   const calcularStockBlister = (updatedFarmacos) => {
-    const total = updatedFarmacos.reduce((acc, farmaco) => {
+    const updatedFarmacosWithBlister = updatedFarmacos.map((farmaco) => {
       const stockCaja = parseFloat(farmaco.stock_caja) || 0;
-      const blister_por_caja = parseFloat(farmaco.blisters_por_caja) || 0;
-    
-      const totalBlister = stockCaja * blister_por_caja;
+      const blisterPorCaja = parseFloat(farmaco.blisters_por_caja) || 0;
       
-
-      return totalBlister;
-    }, 0);
-
-    setTotalBlister(total);
+      // Calcula el total de blisters y actualiza el stock_blister
+      const totalBlister = stockCaja * blisterPorCaja;
+      
+      return {
+        ...farmaco,
+        stock_blister: totalBlister
+      };
+    });
+  
+    setFarmacos(updatedFarmacosWithBlister);
   };
-
+  
   const onSubmit = async () => {
     try {
       const { data } = await ApiRequest().post('/guardar_farmaco_compra', {
@@ -673,16 +679,17 @@ const Compras = () => {
                     />
                   </Grid>
 
-                    <Grid item xs={12} sm={4}>
-                      <TextField
-                        fullWidth
-                        label="Stock Blister"
-                        name="stock_blister"
-                        value={totalBlister}
-                        onChange={(e) => onChangeFarmaco(index, e)}
-                        type="number"
-                      />
-                    </Grid>
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      fullWidth
+                      label="Stock Blister"
+                      name="stock_blister"
+                      value={farmaco.stock_blister} // Permitir que se escriba y se muestre
+                      onChange={(e) => onChangeFarmaco(index, e)}
+                      type="number"
+                    />
+                  </Grid>
+
 
                     <Grid item xs={12} sm={4}>
                     <TextField
