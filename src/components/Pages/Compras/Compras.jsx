@@ -454,7 +454,7 @@ const Compras = () => {
 
             <Grid item xs={12} sm={6}>
                   <TextField
-                    label="No. de factura"
+                    label="No. de documento"
                     value={Nofactura}
                     onChange={(e) => setNofactura(e.target.value)}
                     fullWidth

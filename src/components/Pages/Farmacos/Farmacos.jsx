@@ -697,7 +697,7 @@ const Farmaco = () => {
                                 variant='contained'
                                 color='primary'
                             >
-                                Nuevo
+                                Agregar Catalogo
                             </Button>
                                                     <Button
                             onClick={handleMenuClick}
