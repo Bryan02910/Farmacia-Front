@@ -37,6 +37,7 @@ const Compras = () => {
     fecha_vencimiento: "",
     presentacion: "caja" // Estado para la presentación seleccionada
   }]);
+
   const [proveedorId, setProveedorId] = useState(''); // Estado para ID del proveedor
   const [Nofactura, setNofactura] = useState(''); 
   const [proveedores, setProveedores] = useState([]); // Estado para lista de proveedores
@@ -300,10 +301,14 @@ const Compras = () => {
     }
   
     // Recalcular total de la compra
-    calculateTotalCompra(updatedFarmacos);
     if (name === 'stock_caja' || name === 'blisters_por_caja') {
       calcularStockBlister(updatedFarmacos);
     }
+    if (name === 'stock_blister' || name === 'unidades_por_blister') {
+      calcularStockUnidad(updatedFarmacos);
+    }
+    calculateTotalCompra(updatedFarmacos);
+    
   };
   
   
@@ -350,6 +355,26 @@ const Compras = () => {
   
     setFarmacos(updatedFarmacosWithBlister);
   };
+
+  const calcularStockUnidad = (updatedFarmacos) => {
+    const updatedFarmacosWithUnidad = updatedFarmacos.map((farmaco) => {
+      const stockBlister = parseFloat(farmaco.stock_blister) || 0;
+      const unidadesPorBlister = parseFloat(farmaco.unidades_por_blister) || 0;
+      
+      // Calcula el total de blisters y actualiza el stock_blister
+      const totalUnidad = stockBlister * unidadesPorBlister;
+      
+      return {
+        ...farmaco,
+        stock_unidad: totalUnidad
+      };
+    });
+  
+    setFarmacos(updatedFarmacosWithUnidad);
+  };
+  
+  
+  
   
   const onSubmit = async () => {
     try {
@@ -607,6 +632,30 @@ const Compras = () => {
                     />
                   </Grid>
 
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      label="Precio Venta Blister"
+                      name="precio_venta_blister"
+                      value={farmaco.precio_venta_blister}
+                      onChange={(e) => onChangeFarmaco(index, e)}
+                      fullWidth
+                      variant="outlined"
+                      type="number"
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      label="Precio Venta Unidad"
+                      name="precio_venta_unidad"
+                      value={farmaco.precio_venta_unidad}
+                      onChange={(e) => onChangeFarmaco(index, e)}
+                      fullWidth
+                      variant="outlined"
+                      type="number"
+                    />
+                  </Grid>
+
                     <Grid item xs={12} sm={4}>
                       <TextField
                         fullWidth
@@ -671,6 +720,18 @@ const Compras = () => {
                       label="Precio Venta Blister"
                       name="precio_venta_blister"
                       value={farmaco.precio_venta_blister}
+                      onChange={(e) => onChangeFarmaco(index, e)}
+                      fullWidth
+                      variant="outlined"
+                      type="number"
+                    />
+                  </Grid>
+
+                  <Grid item xs={12} sm={4}>
+                    <TextField
+                      label="Precio Venta Unidad"
+                      name="precio_venta_unidad"
+                      value={farmaco.precio_venta_unidad}
                       onChange={(e) => onChangeFarmaco(index, e)}
                       fullWidth
                       variant="outlined"
