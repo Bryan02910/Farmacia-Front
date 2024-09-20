@@ -20,6 +20,8 @@ const Ventas = () => {
     cantidad: ""
   }]);
   const [totalVenta, setTotalVenta] = useState(0);
+  const [Nofactura, setNofactura] = useState(''); 
+  const [currentDate, setCurrentDate] = useState(''); // Fecha actual 
   const [mensaje, setMensaje] = useState({ ident: null, message: null, type: null });
 
   const onChangeFarmaco = async (index, { target }) => {
@@ -142,6 +144,42 @@ const Ventas = () => {
     doc.save('ventas.pdf');
   };
 
+  const onSubmit = async () => {
+    try {
+      const { data } = await ApiRequest().post('/guardar_farmaco_venta', {
+        farmacos,
+        Nofactura,
+        total_venta: totalVenta,
+      });
+      setMensaje({
+        ident: new Date().getTime(),
+        message: data.message,
+        type: 'success'
+      });
+      setFarmacos([{
+        id: "",
+        nombre: "",
+        tipo_presentacion: "caja",
+        precio_venta: "",
+        cantidad: ""
+      }]); // Reiniciar formulario
+      setNofactura('');
+      setTotalVenta(0); // Reiniciar total
+    } catch (error) {
+      setMensaje({
+        ident: new Date().getTime(),
+        message: error.response.data.message,
+        type: 'error'
+      });
+    }
+  };
+
+  useEffect(() => {
+    const today = new Date();
+    const formattedDate = today.toISOString().split('T')[0]; // Formatear la fecha como YYYY-MM-DD
+    setCurrentDate(formattedDate);
+  }, []);
+
   return (
     <Page title="Ventas">
       <Container>
@@ -154,6 +192,25 @@ const Ventas = () => {
               id={mensaje.ident}
             />
           )}
+
+<Grid container spacing={2}>
+
+<Grid item xs={12} sm={6}>
+      <Typography variant="h6">
+        Fecha de compra: {currentDate}
+      </Typography>
+    </Grid>
+          <Grid item xs={12} sm={6}>
+                <TextField
+                  label="No. de documento"
+                  value={Nofactura}
+                  onChange={(e) => setNofactura(e.target.value)}
+                  fullWidth
+                  variant="outlined"
+                />
+              </Grid>
+
+        </Grid>
           <Grid container spacing={2}>
             {farmacos.map((farmaco, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
@@ -225,6 +282,7 @@ const Ventas = () => {
           <Button
             variant="contained"
             color="primary"
+            onClick={onSubmit}
             sx={{ mt: 2 }}
           >
             Guardar Venta
