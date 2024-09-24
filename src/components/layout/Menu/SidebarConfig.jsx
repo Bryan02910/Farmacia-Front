@@ -58,6 +58,11 @@ const sidebarConfig = [
         path: '/app/proveedor',
         icon: <Inventory2Outlined />,
       },
+      {
+        title: 'Agregar tipo documento',
+        path: '/app/tipodocumento',
+        icon: <Inventory2Outlined />,
+      }
     ],
   },
   {

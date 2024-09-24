@@ -39,8 +39,10 @@ const Compras = () => {
   }]);
 
   const [proveedorId, setProveedorId] = useState(''); // Estado para ID del proveedor
+  const [documentoId, setDocumentoId] = useState(''); 
   const [Nofactura, setNofactura] = useState(''); 
   const [proveedores, setProveedores] = useState([]); // Estado para lista de proveedores
+  const [documento, setDocumento] = useState([]); // Estado para lista de proveedores
   const [laboratorios, setLaboratorios] = useState([]); // Estado para lista de laboratorios
   const [totalCompra, setTotalCompra] = useState(0); // Estado para total
   const [currentDate, setCurrentDate] = useState(''); // Fecha actual 
@@ -74,8 +76,22 @@ const Compras = () => {
       }
     };
 
+    const fetchDocumento = async () => {
+      try {
+        const { data } = await ApiRequest().get('/tipo_documento');
+        setDocumento(data);
+      } catch (error) {
+        setMensaje({
+          ident: new Date().getTime(),
+          message: 'Error al cargar los documentos',
+          type: 'error'
+        });
+      }
+    };
+
     fetchProveedores();
     fetchLaboratorios();
+    fetchDocumento();
   }, []);
 
   const addFarmaco = () => {
@@ -301,16 +317,15 @@ const Compras = () => {
     }
   
     // Recalcular total de la compra
-    if (name === 'stock_caja' || name === 'blisters_por_caja') {
+    /*if (name === 'stock_caja' || name === 'blisters_por_caja') {
       calcularStockBlister(updatedFarmacos);
-    }
-    if (name === 'stock_blister' || name === 'unidades_por_blister') {
+    }*/
+    /*if (name === 'stock_blister' || name === 'unidades_por_blister') {
       calcularStockUnidad(updatedFarmacos);
-    }
+    }*/
     calculateTotalCompra(updatedFarmacos);
     
   };
-  
   
 
   const onChangePresentacion = (index, value) => {
@@ -373,15 +388,13 @@ const Compras = () => {
     setFarmacos(updatedFarmacosWithUnidad);
   };
   
-  
-  
-  
   const onSubmit = async () => {
     try {
       const { data } = await ApiRequest().post('/guardar_farmaco_compra', {
         farmacos,
         proveedorId,
         Nofactura,
+        documentoId,
         total_compra: totalCompra,
       });
       setMensaje({
@@ -413,6 +426,7 @@ const Compras = () => {
       }]); // Reiniciar formulario
       setProveedorId(''); // Reiniciar proveedor
       setNofactura('');
+      setDocumentoId('');
       setTotalCompra(0); // Reiniciar total
     } catch (error) {
       setMensaje({
@@ -427,8 +441,6 @@ const Compras = () => {
     onSubmit(); // Ejecutar la función de guardado
     generatePDF(); // Ejecutar la función para generar el PDF
 };
-
- 
 
   useEffect(() => {
     if (globalState.auth && globalState.auth.rol) {
@@ -475,7 +487,24 @@ const Compras = () => {
                 </Select>
               </FormControl>
             </Grid>
-
+            
+            <Grid item xs={12} sm={4}>
+              <FormControl fullWidth variant="outlined">
+                <InputLabel id="Documento-label">Tipo de documento</InputLabel>
+                <Select
+                  labelId="Documento-label"
+                  value={documentoId}
+                  onChange={(e) => setDocumentoId(e.target.value)}
+                  label="Documento"
+                >
+                  {documento.map((doc) => (
+                    <MenuItem key={doc.id} value={doc.id}>
+                      {doc.nombre_documento} {/* Mostrar el nombre del proveedor */}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
 
             <Grid item xs={12} sm={6}>
                   <TextField
@@ -632,29 +661,6 @@ const Compras = () => {
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      label="Precio Venta Blister"
-                      name="precio_venta_blister"
-                      value={farmaco.precio_venta_blister}
-                      onChange={(e) => onChangeFarmaco(index, e)}
-                      fullWidth
-                      variant="outlined"
-                      type="number"
-                    />
-                  </Grid>
-
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      label="Precio Venta Unidad"
-                      name="precio_venta_unidad"
-                      value={farmaco.precio_venta_unidad}
-                      onChange={(e) => onChangeFarmaco(index, e)}
-                      fullWidth
-                      variant="outlined"
-                      type="number"
-                    />
-                  </Grid>
 
                     <Grid item xs={12} sm={4}>
                       <TextField
@@ -727,17 +733,6 @@ const Compras = () => {
                     />
                   </Grid>
 
-                  <Grid item xs={12} sm={4}>
-                    <TextField
-                      label="Precio Venta Unidad"
-                      name="precio_venta_unidad"
-                      value={farmaco.precio_venta_unidad}
-                      onChange={(e) => onChangeFarmaco(index, e)}
-                      fullWidth
-                      variant="outlined"
-                      type="number"
-                    />
-                  </Grid>
 
                   <Grid item xs={12} sm={4}>
                     <TextField
