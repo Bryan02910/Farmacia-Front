@@ -93,6 +93,9 @@ const Header = ({ onOpenSidebar, isOpenSidebarDesktop, onSidebarDesktop }) => {
 					<IconButton onClick={handleMenu} color="inherit">
 						<PersonOutlineOutlinedIcon />
 					</IconButton>
+					<Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+					{user.user} {/* Aquí se muestra el nombre del usuario */}
+				    </Typography>
 					<Menu
 						anchorEl={anchorEl}
 						anchorOrigin={{
@@ -114,11 +117,13 @@ const Header = ({ onOpenSidebar, isOpenSidebarDesktop, onSidebarDesktop }) => {
 						</ListItemAvatar>
 						<ListItemText 
 							primary={
-							<div style={{ textAlign: 'center' }}>
-								<Typography variant="body1">{user.user}</Typography>
-								<Typography variant="subtitle2" color="textSecondary"><b>{user.rol}</b></Typography>
-							</div>
-							} 
+								<div style={{ textAlign: 'center' }}>
+								  <Typography variant="body1">{user.user}</Typography>
+								  <Typography variant="subtitle2" color="textSecondary">
+									<b>{user.rol}</b>
+								  </Typography>
+								</div>
+							}
 						/>
 						</ListItem>
 					</List>
