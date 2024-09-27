@@ -44,13 +44,13 @@ const MenuApp = ({ isOpenSidebar, onCloseSidebar, isOpenSidebarDesktop }) => {
 				{/* You can add additional elements here if needed */}
 			</Stack>
 			<Box
-				 sx={{
+				sx={{
 					px: 2.5,
 					pb: 2,
 					mt: 4,
 					bgcolor: 'lightblue', // Cambia este valor
 					borderRadius: 2
-				  }}
+				}}
 			>
 				<Stack
 					alignItems="center"
@@ -91,32 +91,32 @@ const MenuApp = ({ isOpenSidebar, onCloseSidebar, isOpenSidebarDesktop }) => {
 					open={isOpenSidebar}
 					onClose={onCloseSidebar}
 					PaperProps={{
-					  sx: {
-						width: DRAWER_WIDTH,
-						bgcolor: 'lightblue', // Cambia este valor por el color que desees
-						boxShadow: 2,
-						transition: 'transform 0.3s ease'
-					  }
+						sx: {
+							width: DRAWER_WIDTH,
+							bgcolor: 'lightblue',
+							boxShadow: 2,
+							transition: 'transform 0.3s ease'
+						}
 					}}
-				  >
+				>
 					{renderContent}
 				</Drawer>
 			</MHidden>
 
 			<MHidden width="lgDown">
 				<Drawer
-					 open={isOpenSidebarDesktop}
-					 variant='persistent'
-					 PaperProps={{
-					   sx: {
-						 width: DRAWER_WIDTH,
-						 bgcolor: 'lightblue', // Cambia este valor por el color que desees
-						 boxShadow: 3,
-						 transition: 'transform 0.3s ease'
-					   }
-					 }}
-				   >
-					 {renderContent}
+					open={isOpenSidebarDesktop}
+					variant='persistent'
+					PaperProps={{
+						sx: {
+							width: DRAWER_WIDTH,
+							bgcolor: 'lightblue',
+							boxShadow: 3,
+							transition: 'transform 0.3s ease'
+						}
+					}}
+				>
+					{renderContent}
 				</Drawer>
 			</MHidden>
 		</RootStyle>
