@@ -521,7 +521,7 @@ const Compras = () => {
           {/* Fármacos */}
           {farmacos.map((farmaco, index) => (
             <Box key={index} sx={{ mt: 4, border: '1px solid #ccc', padding: 2 }}>
-              <Typography variant="h6">Fármaco comprado {index + 1}</Typography>
+              <Typography variant="h6">Fármaco comprado p {index + 1}</Typography>
               <Grid container spacing={2}>
 
                 {/* Selección de Presentación */}

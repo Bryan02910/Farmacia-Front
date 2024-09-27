@@ -3,7 +3,7 @@ import { TextField, Dialog, DialogTitle, DialogContent, DialogContentText, Dialo
 Typography, Grid, Box, Button, Stack, Avatar, IconButton, Divider, Menu 
 ,MenuItem, Select, InputLabel } from '@mui/material';
 import ApiRequest from '../../../helpers/axiosInstances';
-import { AddOutlined, EditOutlined, DeleteOutline, DownloadOutlined} from '@mui/icons-material';
+import { AddOutlined, EditOutlined, DeleteOutline, DownloadOutlined, Close} from '@mui/icons-material';
 import Page from '../../common/Page';
 import ToastAutoHide from '../../common/ToastAutoHide';
 import CommonTable from '../../common/CommonTable';
@@ -198,7 +198,15 @@ const Laboratorio = () => {
 
         {/* Dialogo para Crear/Editar Usuario */}
         <Dialog maxWidth='xs' open={openDialog} onClose={handleDialog}>
-            <DialogTitle>{isEdit ? 'Editar Laboratorio' : 'Crear Laboratorio'}</DialogTitle>
+            <DialogTitle>{isEdit ? 'Editar Laboratorio' : 'Crear Laboratorio'}
+            <IconButton 
+                    aria-label="close" 
+                    onClick={handleDialog} 
+                    style={{ position: 'absolute', right: 8, top: 8 }} 
+                >
+                    <Close />
+                </IconButton>
+            </DialogTitle>
             <DialogContent dividers>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
@@ -253,7 +261,6 @@ const Laboratorio = () => {
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button variant='text' color='primary' onClick={handleDialog}>Cancelar</Button>
                 <Button variant='contained' color='primary' onClick={isEdit ? onEdit : onSubmit}>Guardar</Button>
             </DialogActions>
         </Dialog>
