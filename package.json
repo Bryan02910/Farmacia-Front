@@ -2,9 +2,10 @@
   "name": "farmacia-project",
   "version": "0.0.0",
   "license": "ISC",
+  "type": "module", 
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "set \"VITE_CJS_TRACE=true\" && vite build",
     "serve": "vite preview"
   },
   "dependencies": {
