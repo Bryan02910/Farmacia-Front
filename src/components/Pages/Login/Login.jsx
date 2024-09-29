@@ -155,9 +155,6 @@ const Login = () => {
                             </Button>
                             <Grid container justifyContent="flex-end">
                                 <Grid item>
-                                    <Link href="/forgot-password" variant="body2" sx={{ color: '#000000' }}>
-                                        ¿Olvidaste tu contraseña?
-                                    </Link>
                                 </Grid>
                             </Grid>
                         </Box>
