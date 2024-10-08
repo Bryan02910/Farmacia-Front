@@ -140,7 +140,7 @@ const Ventas = () => {
       startY: 20,
     });
 
-    doc.text(`Total Venta: $${totalVenta.toFixed(2)}`, 10, doc.lastAutoTable.finalY + 10);
+    doc.text(`Total Venta: Q${totalVenta.toFixed(2)}`, 10, doc.lastAutoTable.finalY + 10);
     doc.save('ventas.pdf');
   };
 
@@ -278,7 +278,7 @@ const Ventas = () => {
               </Grid>
             ))}
           </Grid>
-          <Typography variant="h6" mt={2}>Total: ${totalVenta.toFixed(2)}</Typography>
+          <Typography variant="h6" mt={2}>Total: Q{totalVenta.toFixed(2)}</Typography>
           <Button
             variant="contained"
             color="primary"
