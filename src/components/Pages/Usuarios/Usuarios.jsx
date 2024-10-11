@@ -454,8 +454,10 @@ const Usuarios = () => {
                 </Grid>
             </DialogContent>
             <DialogActions>
-                <Button variant='contained' color='primary' onClick={isEdit ? onEdit : onSubmit}>Guardar</Button>
-            </DialogActions>
+            <Button variant='contained' color='primary' onClick={isEdit ? onEdit : onSubmit}>
+        Guardar
+    </Button>
+</DialogActions>
         </Dialog>
 
         {/* Página de Usuarios */}

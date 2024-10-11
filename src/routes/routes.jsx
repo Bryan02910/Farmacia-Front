@@ -38,7 +38,7 @@ const routes = [
 			{
 				path: `/${APP_VALUES.ROOT_ROUTE}/usuarios`,
 				exact: true,
-				render: props => <RouteController component={Usuarios} {...props} />
+				render: props => <RouteController component={Usuarios} {...props} requiredPermissions={['ver_usuarios']} />
 			},
 			{
 				path: `/${APP_VALUES.ROOT_ROUTE}/rol`,

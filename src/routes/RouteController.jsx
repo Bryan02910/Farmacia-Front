@@ -1,26 +1,42 @@
-import React, { useState, useEffect } from 'react'
-import { Redirect } from 'react-router-dom'
+import React, { useState, useEffect } from 'react';
+import { Redirect } from 'react-router-dom';
 
-const RouteController = props => {
-	const { component: Component, ...rest } = props
+const RouteController = (props) => {
+  const { component: Component, requiredPermissions, ...rest } = props;
+  const [isTokenOk, setIsTokenOk] = useState(true);
+  const [hasPermission, setHasPermission] = useState(true);
 
-	const [isTokenOk, setIsTokenOk] = useState(true)
+  const init = () => {
+    const authData = localStorage.getItem("auth");
+    if (authData) {
+      const auth = JSON.parse(authData);
+      setIsTokenOk(auth.isAuth === true);
+      
+      // Verificación de permisos
+      if (requiredPermissions) {
+        const userPermissions = auth.permissions || [];
+        const hasRequiredPermissions = requiredPermissions.every(permission => 
+          userPermissions.includes(permission)
+        );
+        setHasPermission(hasRequiredPermissions);
+      }
+    } else {
+      setIsTokenOk(false);
+    }
+  };
 
-	const init = () => {
-		if (localStorage.getItem("auth")) {
-			const auth = JSON.parse(localStorage.getItem("auth"))
-			if (auth.isAuth===true) {
-				setIsTokenOk(true)
-			} else {
-				setIsTokenOk(false)
-			}
-		} else {
-			setIsTokenOk(false)
-		}
-	}
-	useEffect(init, [])
+  useEffect(init, []);
 
-	return isTokenOk ? <Component {...rest} /> : <Redirect to={'/login'} />
-}
+  // Redirige según la autenticación y permisos
+  if (!isTokenOk) {
+    return <Redirect to={'/login'} />;
+  }
+  
+  if (!hasPermission) {
+    return <Redirect to={'/*'} />; // Puedes crear una página de "No autorizado"
+  }
 
-export default RouteController
+  return <Component {...rest} />;
+};
+
+export default RouteController;
