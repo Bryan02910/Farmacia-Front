@@ -21,6 +21,11 @@ const sidebarConfig = [
         path: '/app/rol',
         icon: <SupervisorAccountOutlined />,
       },
+      {
+        title: 'Permisos',
+        path: '/app/permisos',
+        icon: <SupervisorAccountOutlined />,
+      },
     ],
   },
   {

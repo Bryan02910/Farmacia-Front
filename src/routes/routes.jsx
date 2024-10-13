@@ -14,6 +14,7 @@ const Proveedor = lazy(() => import('../components/Pages/Proveedor'))
 const Compras = lazy(() => import('../components/Pages/Compras'))
 const Ventas = lazy(() => import('../components/Pages/Ventas'))
 const TipoDocumento = lazy(() => import('../components/Pages/TipoDocumento'))
+const Permisos = lazy(() => import('../components/Pages/Permisos'))
 
 const routes = [
 	{
@@ -43,37 +44,42 @@ const routes = [
 			{
 				path: `/${APP_VALUES.ROOT_ROUTE}/rol`,
 				exact: true,
-				render: props => <RouteController component={Rol} {...props} />
+				render: props => <RouteController component={Rol} {...props} requiredPermissions={['ver_rol']} />
 			},
 			{
 				path: `/${APP_VALUES.ROOT_ROUTE}/farmacos`,
 				exact: true,
-				render: props => <RouteController component={Farmacos} {...props} />
+				render: props => <RouteController component={Farmacos} {...props} requiredPermissions={['ver_inventario']}/>
 			},
 			{
 				path: `/${APP_VALUES.ROOT_ROUTE}/laboratorio`,
 				exact: true,
-				render: props => <RouteController component={Laboratorio} {...props} />
+				render: props => <RouteController component={Laboratorio} {...props} requiredPermissions={['ver_lab']} />
 			},
 			{
 				path: `/${APP_VALUES.ROOT_ROUTE}/proveedor`,
 				exact: true,
-				render: props => <RouteController component={Proveedor} {...props} />
+				render: props => <RouteController component={Proveedor} {...props} requiredPermissions={['ver_prov']} />
 			},
 			{
 				path: `/${APP_VALUES.ROOT_ROUTE}/compras`,
 				exact: true,
-				render: props => <RouteController component={Compras} {...props} />
+				render: props => <RouteController component={Compras} {...props} requiredPermissions={['ver_compras']} />
 			},
 			{
 				path: `/${APP_VALUES.ROOT_ROUTE}/ventas`,
 				exact: true,
-				render: props => <RouteController component={Ventas} {...props} />
+				render: props => <RouteController component={Ventas} {...props}  requiredPermissions={['ver_ventas']}/>
 			},
 			{
 				path: `/${APP_VALUES.ROOT_ROUTE}/tipodocumento`,
 				exact: true,
-				render: props => <RouteController component={TipoDocumento} {...props} />
+				render: props => <RouteController component={TipoDocumento} {...props} requiredPermissions={['ver_tipod']}/>
+			},
+			{
+				path: `/${APP_VALUES.ROOT_ROUTE}/permisos`,
+				exact: true,
+				render: props => <RouteController component={Permisos} {...props} requiredPermissions={['ver_permisos']} />
 			},
 			{
 				path: `/${APP_VALUES.ROOT_ROUTE}/*`,
