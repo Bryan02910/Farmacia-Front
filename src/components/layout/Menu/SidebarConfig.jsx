@@ -39,7 +39,7 @@ const sidebarConfig = [
       },
       {
         title: 'Historial de Ventas',
-        path: '/app/ventas/historial',
+        path: '/app/historial_ventas',
         icon: <Inventory2Outlined />,
       },
     ],
