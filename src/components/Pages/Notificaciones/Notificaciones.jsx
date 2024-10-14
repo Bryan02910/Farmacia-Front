@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { Container, Typography, Grid, Box, Button } from '@mui/material';
+import { Container, Typography, Grid, Box, Card, CardContent, CardActions, Button } from '@mui/material';
 import Page from '../../common/Page';
-import CommonTable from '../../common/CommonTable';
 import ApiRequest from '../../../helpers/axiosInstances';
 import { MainContext } from '../../../Context/MainContext';
 import ToastAutoHide from '../../common/ToastAutoHide';
@@ -32,19 +31,6 @@ const StockYVencimientos = () => {
         init();
     }, []);
 
-    const stockColumns = [
-        { field: 'id', headerName: 'ID', width: 120 },
-        { field: 'nombre', headerName: 'Nombre', width: 300 },
-        { field: 'stock_total_calculado', headerName: 'Stock Total', width: 150 },
-        { field: 'nivel_reorden', headerName: 'Nivel de Reorden', width: 150 },
-    ];
-
-    const vencimientoColumns = [
-        { field: 'id', headerName: 'ID', width: 120 },
-        { field: 'nombre', headerName: 'Nombre', width: 300 },
-        { field: 'fecha_vencimiento', headerName: 'Fecha de Vencimiento', width: 200 },
-    ];
-
     return (
         <Page title="Chapina | Stock Bajo y Fármacos Prontos a Vencer">
             <ToastAutoHide message={mensaje} />
@@ -53,27 +39,44 @@ const StockYVencimientos = () => {
                     <Typography variant="h4">Stock Bajo</Typography>
                 </Box>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <CommonTable
-                            data={stockBajo}
-                            columns={stockColumns}
-                        />
-                    </Grid>
+                    {stockBajo.map((item) => (
+                        <Grid item xs={12} sm={6} md={4} key={item.id}>
+                            <Card variant="outlined">
+                                <CardContent>
+                                    <Typography variant="h6">{item.nombre}</Typography>
+                                    <Typography color="textSecondary">ID: {item.id}</Typography>
+                                    <Typography color="textSecondary">Stock Total: {item.stock_total_calculado}</Typography>
+                                    <Typography color="textSecondary">Nivel de Reorden: {item.nivel_reorden}</Typography>
+                                </CardContent>
+                                <CardActions>
+                                    <Button size="small" color="primary">Detalles</Button>
+                                </CardActions>
+                            </Card>
+                        </Grid>
+                    ))}
                 </Grid>
 
                 <Box sx={{ pb: 5, mt: 5 }}>
                     <Typography variant="h4">Fármacos Prontos a Vencer</Typography>
                 </Box>
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                        <CommonTable
-                            data={farmacosProntosAVencer}
-                            columns={vencimientoColumns}
-                        />
-                    </Grid>
+                    {farmacosProntosAVencer.map((item) => (
+                        <Grid item xs={12} sm={6} md={4} key={item.id}>
+                            <Card variant="outlined">
+                                <CardContent>
+                                    <Typography variant="h6">{item.nombre}</Typography>
+                                    <Typography color="textSecondary">ID: {item.id}</Typography>
+                                    <Typography color="textSecondary">Fecha de Vencimiento: {item.fecha_vencimiento}</Typography>
+                                </CardContent>
+                                <CardActions>
+                                    <Button size="small" color="primary">Detalles</Button>
+                                </CardActions>
+                            </Card>
+                        </Grid>
+                    ))}
                 </Grid>
             </Container>
-        </Page> 
+        </Page>
     );
 };
 
