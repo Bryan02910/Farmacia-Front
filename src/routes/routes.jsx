@@ -15,6 +15,7 @@ const Compras = lazy(() => import('../components/Pages/Compras'))
 const Ventas = lazy(() => import('../components/Pages/Ventas'))
 const TipoDocumento = lazy(() => import('../components/Pages/TipoDocumento'))
 const Permisos = lazy(() => import('../components/Pages/Permisos'))
+const Acceso = lazy (() => import('../components/Pages/Acceso')) 
 
 const routes = [
 	{
@@ -26,6 +27,11 @@ const routes = [
 		path: "/login",
 		exact: true,
 		render: props => <Login {...props} />
+	},
+	{
+		path: `/acceso`,
+		exact: true,
+		render: props => <Acceso {...props} />
 	},
 	{
 		path: `/${APP_VALUES.ROOT_ROUTE}`,

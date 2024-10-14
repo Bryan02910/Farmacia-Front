@@ -33,7 +33,7 @@ const RouteController = (props) => {
   }
   
   if (!hasPermission) {
-    return <Redirect to={'/*'} />; // Puedes crear una página de "No autorizado"
+    return <Redirect to={'/acceso'} />; // Puedes crear una página de "No autorizado"
   }
 
   return <Component {...rest} />;

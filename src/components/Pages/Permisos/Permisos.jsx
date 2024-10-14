@@ -9,7 +9,7 @@ import CommonTable from '../../common/CommonTable';
 import { MainContext, APP_STATE } from '../../../Context/MainContext';
 import 'jspdf-autotable';
 
-const Rol = () => {
+const Permisos = () => {
 
     const { globalState } = useContext(MainContext);
     const [userRole, setUserRole] = useState();
@@ -346,4 +346,4 @@ const Rol = () => {
     );
 };
 
-export default Rol;
+export default Permisos;
