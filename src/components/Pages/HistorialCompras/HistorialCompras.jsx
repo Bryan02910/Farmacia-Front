@@ -20,7 +20,11 @@ const HistorialCompras = () => {
 
     const initialState = {
         id: "",
-        descripcion: "",
+        total_compra:"",
+        fecha_compra: "",
+        Nofactura: "",
+        proveedor: "",
+        tipo_documento: ""
         
     };
 
@@ -34,13 +38,28 @@ const HistorialCompras = () => {
 
 
     const init = async () => {
-        const { data } = await ApiRequest().get('/roles');
+        const { data } = await ApiRequest().get('/historial_compras');
         setUsuariosList(data);
     };
 
     const columns = [
         { field: 'id', headerName: 'ID', width: 120 },
-        { field: 'descripcion', headerName: 'Descripción', width: 220 },
+        {
+			field: 'fecha_compra',
+			headerName: 'Fecha de compra',
+			width: 220,
+			valueFormatter: (params) => {
+			  const fechaCompleta = params.value; // Suponemos que params.value contiene la fecha y la hora
+			  const fecha = new Date(fechaCompleta);
+			  const options = { year: 'numeric', month: '2-digit', day: '2-digit' };
+			  return fecha.toLocaleDateString('es-ES', options); // Ajusta 'es-ES' al idioma deseado
+			},
+		  },
+          { field: 'total_compra', headerName: 'Total compra', width: 220 },
+          { field: 'Nofactura', headerName: 'NO. Documento', width: 220 },
+          { field: 'tipo_documento', headerName: 'Tipo de documento', width: 220 },
+          { field: 'proveedor', headerName: 'Proveedor', width: 220 },
+          
         {
             field: '',
             headerName: 'Acciones',
@@ -232,11 +251,11 @@ const HistorialCompras = () => {
         </Dialog>
 
         {/* Página de Usuarios */}
-        <Page title="Chapina | Roles">
+        <Page title="Chapina | Historial compras">
             <ToastAutoHide message={mensaje} />
             <Container maxWidth='lg'>
                 <Box sx={{ pb: 5 }}>
-                    <Typography variant="h4">Lista de roles</Typography>
+                    <Typography variant="h4">Historial de compras</Typography>
                 </Box>
                 <Grid container spacing={2} justifyContent="space-between" alignItems="center">
                     {userRole === 'ADMIN' && (
