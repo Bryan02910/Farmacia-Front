@@ -81,7 +81,7 @@ const sidebarConfig = [
       },
       {
         title: 'Historial de Compras',
-        path: '/app/compras/historial',
+        path: '/app/historial_compras',
         icon: <Inventory2Outlined />,
       },
     ],

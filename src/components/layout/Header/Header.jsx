@@ -3,11 +3,11 @@ import PropTypes from 'prop-types'
 import { styled } from '@mui/material/styles'
 import { Box, Stack, AppBar, Avatar, Toolbar, IconButton, Menu, MenuItem, List, ListItem, ListItemAvatar, ListItemText, Typography, Divider } from '@mui/material'
 import { MHidden } from '../@material-extend'
-import MenuOutlinedIcon from '@mui/icons-material/MenuOutlined'
+import HomeOutlinedIcon from '@mui/icons-material/HomeOutlined'  // Nuevo icono para el menú
 import { useHistory } from 'react-router'
 import { MainContext, APP_STATE } from '../../../Context/MainContext'
-import PersonOutlineOutlinedIcon from '@mui/icons-material/PersonOutlineOutlined'
-import ExitToAppOutlinedIcon from '@mui/icons-material/ExitToAppOutlined'
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined'  // Nuevo icono para el usuario
+import PowerSettingsNewOutlinedIcon from '@mui/icons-material/PowerSettingsNewOutlined'  // Nuevo icono para cerrar sesión
 
 // ----------------------------------------------------------------------
 
@@ -37,7 +37,7 @@ const RootStyle = styled(AppBar, { shouldForwardProp: (prop) => prop !== 'open' 
   );
   
 
-  const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
+const ToolbarStyle = styled(Toolbar)(({ theme }) => ({
 	minHeight: APPBAR_MOBILE,
 	[theme.breakpoints.up('lg')]: {
 	  minHeight: APPBAR_DESKTOP,
@@ -45,8 +45,8 @@ const RootStyle = styled(AppBar, { shouldForwardProp: (prop) => prop !== 'open' 
 	},
 	display: 'flex',
 	justifyContent: 'space-between', // Alineación de los elementos
-  }));
-  
+}));
+
 // ----------------------------------------------------------------------
 
 const Header = ({ onOpenSidebar, isOpenSidebarDesktop, onSidebarDesktop }) => {
@@ -79,22 +79,22 @@ const Header = ({ onOpenSidebar, isOpenSidebarDesktop, onSidebarDesktop }) => {
 			<ToolbarStyle>
 				<MHidden width="lgUp">
 					<IconButton onClick={onOpenSidebar} sx={{ mr: 1 }} color='inherit'>
-						<MenuOutlinedIcon />
+						<HomeOutlinedIcon /> {/* Icono cambiado */}
 					</IconButton>
 				</MHidden>
 				<MHidden width="lgDown">
 					<IconButton onClick={onSidebarDesktop} sx={{ mr: 1 }} color='inherit'>
-						<MenuOutlinedIcon />
+						<HomeOutlinedIcon /> {/* Icono cambiado */}
 					</IconButton>
 				</MHidden>
 
 				<Box sx={{ flexGrow: 1 }} />
 				<Stack direction="row" alignItems="center" spacing={{ xs: 0.5, sm: 1.5 }}>
-					<IconButton onClick={handleMenu} color="inherit">
-						<PersonOutlineOutlinedIcon />
-					</IconButton>
 					<Typography variant="body1" sx={{ fontWeight: 'bold' }}>
 					{user.user} {/* Aquí se muestra el nombre del usuario */}
+					<IconButton onClick={handleMenu} color="inherit">
+						<SettingsOutlinedIcon /> {/* Icono cambiado */}
+					</IconButton>
 				    </Typography>
 					<Menu
 						anchorEl={anchorEl}
@@ -134,7 +134,7 @@ const Header = ({ onOpenSidebar, isOpenSidebarDesktop, onSidebarDesktop }) => {
 					localStorage.clear();
 					push('/login');
 					}} sx={{ justifyContent: 'center', padding: '10px 20px' }}>
-					<ExitToAppOutlinedIcon sx={{ marginRight: 1 }} />
+					<PowerSettingsNewOutlinedIcon sx={{ marginRight: 1 }} /> {/* Icono cambiado */}
 					<Typography variant="body2">Cerrar sesión</Typography>
 						</MenuItem>
 					</Menu>
