@@ -312,7 +312,7 @@ const Permisos = () => {
             {/* Dialogo para eliminar */}
             
             {/* Página de Usuarios */}
-            <Page title="Chapina | Roles">
+            <Page title="Chapina | Permisos">
                 <ToastAutoHide message={mensaje} />
                 <Container maxWidth='lg'>
                     <Box sx={{ pb: 5 }}>
