@@ -124,7 +124,7 @@ const Ventas = () => {
   }, []);
 
   return (
-    <Page title="Ventas">
+    <Page title="Chapina| Ventas">
       <Container>
         <Typography variant="h4">Ventas</Typography>
         <Box sx={{ mt: 2 }}>

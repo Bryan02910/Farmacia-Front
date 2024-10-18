@@ -18,6 +18,7 @@ import {
   DialogContent,
   DialogActions,
 } from '@mui/material';
+import Page from '../../common/Page';
 import ApiRequest from '../../../helpers/axiosInstances';
 import { MainContext } from '../../../Context/MainContext';
 import ToastAutoHide from '../../common/ToastAutoHide';
@@ -85,7 +86,10 @@ const HistorialCompras = () => {
   );
 
   return (
+    <>
+    <Page title="Chapina| Historial de compras">
     <Container>
+      
       <Typography variant="h4" gutterBottom>Historial de Compras</Typography>
 
       {mensaje.message && (
@@ -192,6 +196,8 @@ const HistorialCompras = () => {
         </DialogActions>
       </Dialog>
     </Container>
+    </Page>
+    </>
   );
 };
 
