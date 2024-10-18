@@ -12,104 +12,55 @@ import 'jspdf-autotable';
 
 const Ventas = () => {
   const { globalState } = useContext(MainContext);
-  const [farmacos, setFarmacos] = useState([{
-    id: "",
-    nombre: "",
-    tipo_presentacion: "caja",
-    precio_venta: "",
-    cantidad: ""
-  }]);
+  const [farmacos, setFarmacos] = useState([{ id: "", nombre: "", tipo_presentacion: "caja", precio_venta: "", cantidad: "" }]);
   const [totalVenta, setTotalVenta] = useState(0);
-  const [Nofactura, setNofactura] = useState(''); 
-  const [currentDate, setCurrentDate] = useState(''); // Fecha actual 
+  const [Nofactura, setNofactura] = useState('');
+  const [currentDate, setCurrentDate] = useState('');
   const [mensaje, setMensaje] = useState({ ident: null, message: null, type: null });
 
   const onChangeFarmaco = async (index, { target }) => {
     const { name, value } = target;
     const updatedFarmacos = [...farmacos];
-    
-    // Check for the ID field update
+
     if (name === "id") {
       updatedFarmacos[index][name] = value;
       try {
-        const { data } = await ApiRequest().get(`/farmaco_venta/${value}`, {
-          params: { tipo_presentacion: updatedFarmacos[index].tipo_presentacion }
-        });
+        const { data } = await ApiRequest().get(`/farmaco_venta/${value}`, { params: { tipo_presentacion: updatedFarmacos[index].tipo_presentacion } });
 
         if (data) {
-          updatedFarmacos[index] = {
-            ...updatedFarmacos[index],
-            ...data,
-          };
+          updatedFarmacos[index] = { ...updatedFarmacos[index], ...data };
         } else {
-          updatedFarmacos[index] = {
-            ...updatedFarmacos[index],
-            nombre: "",
-            precio_venta: ""
-          };
+          updatedFarmacos[index] = { ...updatedFarmacos[index], nombre: "", precio_venta: "" };
         }
         setFarmacos(updatedFarmacos);
-        calculateTotalCompra(updatedFarmacos);
       } catch (error) {
-        setMensaje({
-          ident: new Date().getTime(),
-          message: 'Error al obtener los datos del fármaco',
-          type: 'error',
-        });
-
-        if (error.response?.status === 404) {
-          updatedFarmacos[index] = {
-            ...updatedFarmacos[index],
-            nombre: "",
-            precio_venta: ""
-          };
-          setFarmacos(updatedFarmacos);
-        }
+        setMensaje({ ident: new Date().getTime(), message: 'Error al obtener los datos del fármaco', type: 'error' });
+        updatedFarmacos[index] = { ...updatedFarmacos[index], nombre: "", precio_venta: "" };
+        setFarmacos(updatedFarmacos);
       }
     } else if (name === "tipo_presentacion") {
       updatedFarmacos[index][name] = value;
       try {
-        const { data } = await ApiRequest().get(`/farmaco_venta/${updatedFarmacos[index].id}`, {
-          params: { tipo_presentacion: value }
-        });
+        const { data } = await ApiRequest().get(`/farmaco_venta/${updatedFarmacos[index].id}`, { params: { tipo_presentacion: value } });
 
         if (data) {
-          updatedFarmacos[index] = {
-            ...updatedFarmacos[index],
-            nombre: data.nombre,
-            precio_venta: data.precio_venta
-          };
+          updatedFarmacos[index] = { ...updatedFarmacos[index], nombre: data.nombre, precio_venta: data.precio_venta };
         } else {
-          updatedFarmacos[index] = {
-            ...updatedFarmacos[index],
-            nombre: "",
-            precio_venta: ""
-          };
+          updatedFarmacos[index] = { ...updatedFarmacos[index], nombre: "", precio_venta: "" };
         }
         setFarmacos(updatedFarmacos);
-        calculateTotalCompra(updatedFarmacos);
       } catch (error) {
-        setMensaje({
-          ident: new Date().getTime(),
-          message: 'Error al obtener los datos del fármaco',
-          type: 'error',
-        });
+        setMensaje({ ident: new Date().getTime(), message: 'Error al obtener los datos del fármaco', type: 'error' });
       }
     } else {
       updatedFarmacos[index][name] = value;
-      setFarmacos(updatedFarmacos);
-      calculateTotalCompra(updatedFarmacos);
     }
+
+    calculateTotalCompra(updatedFarmacos);
   };
 
   const addFarmaco = () => {
-    setFarmacos([...farmacos, {
-      id: "",
-      nombre: "",
-      tipo_presentacion: "caja",
-      precio_venta: "",
-      cantidad: ""
-    }]);
+    setFarmacos([...farmacos, { id: "", nombre: "", tipo_presentacion: "caja", precio_venta: "", cantidad: "" }]);
   };
 
   const removeFarmaco = (index) => {
@@ -133,7 +84,7 @@ const Ventas = () => {
     doc.text("Reporte de Ventas", 10, 10);
     
     const tableData = farmacos.map(f => [f.id, f.nombre, f.tipo_presentacion, f.precio_venta, f.cantidad, (parseFloat(f.precio_venta) * parseInt(f.cantidad, 10))]);
-    
+
     doc.autoTable({
       head: [['ID', 'Nombre', 'Tipo Presentación', 'Precio Venta', 'Cantidad', 'Subtotal']],
       body: tableData,
@@ -145,32 +96,24 @@ const Ventas = () => {
   };
 
   const onSubmit = async () => {
+    // Validar que al menos haya un fármaco con cantidad mayor a 0
+    if (farmacos.every(farmaco => !farmaco.cantidad || parseInt(farmaco.cantidad) <= 0)) {
+      setMensaje({ ident: new Date().getTime(), message: 'Debes agregar al menos un fármaco con cantidad válida.', type: 'error' });
+      return;
+    }
+
     try {
       const { data } = await ApiRequest().post('/guardar_farmaco_venta', {
         farmacos,
         Nofactura,
         total_venta: totalVenta,
       });
-      setMensaje({
-        ident: new Date().getTime(),
-        message: data.message,
-        type: 'success'
-      });
-      setFarmacos([{
-        id: "",
-        nombre: "",
-        tipo_presentacion: "caja",
-        precio_venta: "",
-        cantidad: ""
-      }]); // Reiniciar formulario
+      setMensaje({ ident: new Date().getTime(), message: data.message, type: 'success' });
+      setFarmacos([{ id: "", nombre: "", tipo_presentacion: "caja", precio_venta: "", cantidad: "" }]); // Reiniciar formulario
       setNofactura('');
       setTotalVenta(0); // Reiniciar total
     } catch (error) {
-      setMensaje({
-        ident: new Date().getTime(),
-        message: error.response.data.message,
-        type: 'error'
-      });
+      setMensaje({ ident: new Date().getTime(), message: error.response?.data?.message || 'Error al guardar la venta.', type: 'error' });
     }
   };
 
@@ -193,24 +136,23 @@ const Ventas = () => {
             />
           )}
 
-<Grid container spacing={2}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <Typography variant="h6">
+                Fecha de compra: {currentDate}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <TextField
+                label="No. de documento"
+                value={Nofactura}
+                onChange={(e) => setNofactura(e.target.value)}
+                fullWidth
+                variant="outlined"
+              />
+            </Grid>
+          </Grid>
 
-<Grid item xs={12} sm={6}>
-      <Typography variant="h6">
-        Fecha de compra: {currentDate}
-      </Typography>
-    </Grid>
-          <Grid item xs={12} sm={6}>
-                <TextField
-                  label="No. de documento"
-                  value={Nofactura}
-                  onChange={(e) => setNofactura(e.target.value)}
-                  fullWidth
-                  variant="outlined"
-                />
-              </Grid>
-
-        </Grid>
           <Grid container spacing={2}>
             {farmacos.map((farmaco, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>
@@ -278,6 +220,7 @@ const Ventas = () => {
               </Grid>
             ))}
           </Grid>
+
           <Typography variant="h6" mt={2}>Total: Q{totalVenta.toFixed(2)}</Typography>
           <Button
             variant="contained"
