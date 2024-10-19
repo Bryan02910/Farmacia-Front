@@ -97,6 +97,7 @@ const Compras = () => {
   const addFarmaco = () => {
     setFarmacos([...farmacos, {
       id: "",
+      presentacion: "",
       nombre: "",
       descripcion: "",
       precio_caja: "",
@@ -115,7 +116,6 @@ const Compras = () => {
       proveedor_id: "",
       laboratorio_id: "",
       fecha_vencimiento: "",
-      presentacion: "caja" // Nueva propiedad para la presentación
     }]);
   };
 
@@ -405,6 +405,7 @@ const Compras = () => {
       setFarmacos([{
         id: "",
         nombre: "",
+        presentacion: "",
         descripcion: "",
         precio_caja: "",
         precio_blister: "",
@@ -422,7 +423,6 @@ const Compras = () => {
         proveedor_id: "",
         laboratorio_id: "",
         fecha_vencimiento: "",
-        presentacion: "caja" // Reiniciar presentación
       }]); // Reiniciar formulario
       setProveedorId(''); // Reiniciar proveedor
       setNofactura('');
@@ -534,9 +534,9 @@ const Compras = () => {
                       onChange={(e) => onChangePresentacion(index, e.target.value)}
                       label="Presentación"
                     >
-                      <MenuItem value="caja">Caja</MenuItem>
-                      <MenuItem value="blister">Blister</MenuItem>
-                      <MenuItem value="unidad">Unidad</MenuItem>
+                      <MenuItem value="caja">caja</MenuItem>
+                      <MenuItem value="blister">blister</MenuItem>
+                      <MenuItem value="unidad">unidad</MenuItem>
                     </Select>
                   </FormControl>
                 </Grid>
