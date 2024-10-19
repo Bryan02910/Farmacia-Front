@@ -96,7 +96,7 @@ const Ventas = () => {
   
 
   const addFarmaco = () => {
-    setFarmacos([...farmacos, { id: "", nombre: "", tipo_presentacion: "caja", precio_venta: "", cantidad: "" }]);
+    setFarmacos([...farmacos, { id: "", nombre: "", tipo_presentacion: "", precio_venta: "", cantidad: "" }]);
   };
 
   const removeFarmaco = (index) => {
