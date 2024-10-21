@@ -91,7 +91,7 @@ const HistorialVentas = () => {
     <Page title="Chapina| Historial de ventas">
     <Container>
       
-      <Typography variant="h4" gutterBottom>Historial de Compras</Typography>
+      <Typography variant="h4" gutterBottom>Historial de ventas</Typography>
 
       {mensaje.message && (
         <ToastAutoHide

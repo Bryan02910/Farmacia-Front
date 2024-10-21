@@ -115,7 +115,12 @@ const HistorialCompras = () => {
             <TableRow>
               <TableCell>
                 <TableSortLabel active>
-                  No. de Factura
+                  No. de documento
+                </TableSortLabel>
+              </TableCell>
+              <TableCell>
+                <TableSortLabel active>
+                  Tipo de documento
                 </TableSortLabel>
               </TableCell>
               <TableCell>
@@ -142,6 +147,7 @@ const HistorialCompras = () => {
             {filteredCompras.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((compra) => (
               <TableRow key={compra.id}>
                 <TableCell>{compra.Nofactura}</TableCell>
+                <TableCell>{compra.tipo_documento}</TableCell>
                 <TableCell>{compra.fecha_compra}</TableCell>
                 <TableCell>{compra.proveedor}</TableCell>
                 <TableCell>{compra.total_compra.toFixed(2)}</TableCell>

@@ -56,10 +56,8 @@ const Farmaco = () => {
     const [mensaje, setMensaje] = useState({ ident: null, message: null, type: null });
     const [idDelete, setIdDelete] = useState(null);
     const [openDialogDelete, setOpenDialogDelete] = useState(false);
-    const [deletedUsers, setDeletedUsers] = useState([]);
     const [labs, setLaboratorios] = useState([]);
     const [provs, setProveedores] = useState([]);
-    const [password, setPassword] = useState("");
     const [presentationType, setPresentationType] = useState('caja');
 
 
