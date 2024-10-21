@@ -32,6 +32,7 @@ const HistorialVentas = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
   const [open, setOpen] = useState(false); // Estado para controlar el modal
+  
 
   useEffect(() => {
     let isMounted = true; // Para evitar actualizaciones de estado si el componente se desmonta

@@ -11,6 +11,7 @@ import jsPDF from 'jspdf';
 import { MainContext, APP_STATE } from '../../../Context/MainContext'
 import imagesList from '../../../assets'
 import 'jspdf-autotable';
+import * as XLSX from 'xlsx';
 
 
 
@@ -254,15 +255,15 @@ const Farmaco = () => {
             farmaco.id.toString(),
             farmaco.nombre,
             farmaco.descripcion,
-            farmaco.precio_caja,
-            farmaco.precio_blister,
-            farmaco.precio_unidad,
-            farmaco.stock_caja,
-            farmaco.stock_blister,
-            farmaco.stock_unidad,
-            farmaco.fecha_vencimiento,
-            farmaco.proveedor,
-            farmaco.laboratorio
+            farmaco.precio_caja === 0 ? '-' : farmaco.precio_caja || '-', // Reemplaza 0 o vacío por '-'
+            farmaco.precio_blister === 0 ? '-' : farmaco.precio_blister || '-', // Reemplaza 0 o vacío por '-'
+            farmaco.precio_unidad === 0 ? '-' : farmaco.precio_unidad || '-', // Reemplaza 0 o vacío por '-'
+            farmaco.stock_caja === 0 ? '-' : farmaco.stock_caja || '-', // Reemplaza 0 o vacío por '-'
+            farmaco.stock_blister === 0 ? '-' : farmaco.stock_blister || '-', // Reemplaza 0 o vacío por '-'
+            farmaco.stock_unidad === 0 ? '-' : farmaco.stock_unidad || '-', // Reemplaza 0 o vacío por '-'
+            farmaco.fecha_vencimiento || '-', // Reemplaza vacío por '-'
+            farmaco.proveedor || '-', // Reemplaza vacío por '-'
+            farmaco.laboratorio || '-' // Reemplaza vacío por '-'
         ]);
     
         const headers = [
@@ -305,6 +306,94 @@ const Farmaco = () => {
         doc.save(reportType === 'stockBajo' ? 'reporte_stock_bajo.pdf' : 'reporte_prontos_a_vencer.pdf');
     };
     
+
+    const generateExcel = (reportType) => {
+        let filteredData;
+        let title;
+    
+        // Generar datos según el tipo de reporte
+        if (reportType === 'stockBajo') {
+            filteredData = usuariosList.filter(farmaco => farmaco.stock_total_calculado <= farmaco.nivel_reorden);
+            title = 'Reporte de Fármacos con Stock Bajo';
+        } else if (reportType === 'prontosAVencer') {
+            const today = new Date();
+            filteredData = usuariosList.filter(farmaco => {
+                const fechaVencimiento = new Date(farmaco.fecha_vencimiento);
+                const diffDays = Math.ceil((fechaVencimiento - today) / (1000 * 60 * 60 * 24));
+                return diffDays <= 30;
+            });
+            title = 'Reporte de Fármacos Prontos a Vencer';
+        } else if (reportType === 'todos') {
+            filteredData = usuariosList; // Obtener todos los fármacos
+            title = 'Reporte de Todos los Fármacos';
+        }
+    
+        // Preparar los datos para la hoja de cálculo
+        const tableData = filteredData.map(farmaco => ({
+            'ID': farmaco.id.toString(),
+            'Nombre': farmaco.nombre,
+            'Descripción': farmaco.descripcion,
+            'Precio por Caja': farmaco.precio_caja === 0 ? '-' : farmaco.precio_caja,
+            'Precio por Blister': farmaco.precio_blister === 0 ? '-' : farmaco.precio_blister,
+            'Precio por Unidad': farmaco.precio_unidad === 0 ? '-' : farmaco.precio_unidad,
+            'Stock por Caja': farmaco.stock_caja === 0 ? '-' : farmaco.stock_caja,
+            'Stock por Blister': farmaco.stock_blister === 0 ? '-' : farmaco.stock_blister,
+            'Stock por Unidad': farmaco.stock_unidad === 0 ? '-' : farmaco.stock_unidad,
+            'Fecha de Vencimiento': farmaco.fecha_vencimiento,
+            'Proveedor': farmaco.proveedor,
+            'Laboratorio': farmaco.laboratorio
+        }));
+    
+        // Crear un nuevo libro de trabajo
+        const workbook = XLSX.utils.book_new();
+        const worksheet = XLSX.utils.json_to_sheet(tableData);
+    
+        // Aplicar estilos a las cabeceras
+        const headerCellStyle = {
+            font: {
+                bold: true,
+                color: { rgb: "FFFFFF" } // Color de texto blanco
+            },
+            fill: {
+                fgColor: { rgb: "228B22" } // Color de fondo verde
+            }
+        };
+    
+        // Agregar estilo a las cabeceras
+        Object.keys(worksheet).forEach((cell) => {
+            if (cell.startsWith('!')) return; // Ignorar propiedades especiales
+            if (cell[1] === '1') { // La fila 1 contiene las cabeceras
+                worksheet[cell].s = headerCellStyle;
+            }
+        });
+    
+        // Ajustar el ancho de las columnas
+        const cols = [
+            { wpx: 30 }, // Ancho para ID
+            { wpx: 200 }, // Ancho para Nombre
+            { wpx: 250 }, // Ancho para Descripción
+            { wpx: 100 }, // Ancho para Precio por Caja
+            { wpx: 100 }, // Ancho para Precio por Blister
+            { wpx: 100 }, // Ancho para Precio por Unidad
+            { wpx: 100 }, // Ancho para Stock por Caja
+            { wpx: 100 }, // Ancho para Stock por Blister
+            { wpx: 100 }, // Ancho para Stock por Unidad
+            { wpx: 100 }, // Ancho para Fecha de Vencimiento
+            { wpx: 100 }, // Ancho para Proveedor
+            { wpx: 100 }  // Ancho para Laboratorio
+        ];
+    
+        worksheet['!cols'] = cols; // Aplicar el ancho a la hoja
+    
+        // Añadir la hoja de cálculo al libro
+        XLSX.utils.book_append_sheet(workbook, worksheet, title);
+    
+        // Generar el archivo Excel
+        const excelFileName = reportType === 'stockBajo' ? 'reporte_stock_bajo.xlsx' :
+                              reportType === 'prontosAVencer' ? 'reporte_prontos_a_vencer.xlsx' :
+                              'reporte_todos_los_farmacos.xlsx'; // Nombre para todos los fármacos
+        XLSX.writeFile(workbook, excelFileName);
+    };
     
     
     const handlePresentationChange = (event) => {
@@ -706,7 +795,7 @@ const Farmaco = () => {
                             >
                                 Agregar Catalogo
                             </Button>
-                                                    <Button
+                            <Button
                             onClick={handleMenuClick}
                             startIcon={<DownloadOutlined />}
                             variant='contained'
@@ -721,12 +810,22 @@ const Farmaco = () => {
                             onClose={handleMenuClose}
                         >
                             <MenuItem onClick={() => { generatePDF('stockBajo'); handleMenuClose(); }}>
-                                Fármacos con Stock Bajo
+                                Fármacos con Stock Bajo (PDF)
                             </MenuItem>
                             <MenuItem onClick={() => { generatePDF('prontosAVencer'); handleMenuClose(); }}>
-                                Fármacos Prontos a Vencer
+                                Fármacos Prontos a Vencer (PDF)
                             </MenuItem>
+                            <MenuItem onClick={() => { generateExcel('stockBajo'); handleMenuClose(); }}>
+                                Fármacos con Stock Bajo (Excel)
+                            </MenuItem>
+                            <MenuItem onClick={() => { generateExcel('prontosAVencer'); handleMenuClose(); }}>
+                                Fármacos Prontos a Vencer (Excel)
+                            </MenuItem>
+                            <MenuItem onClick={() => { generateExcel('todos'); handleMenuClose(); }}>
+                                Todos los Fármacos (Excel)
+                            </MenuItem> 
                         </Menu>
+
                         </Grid>
                     )}
                 </Grid>
