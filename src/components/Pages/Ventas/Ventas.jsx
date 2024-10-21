@@ -13,7 +13,13 @@ import imagesList from '../../../assets'
 
 const Ventas = () => {
   const { globalState } = useContext(MainContext);
-  const [farmacos, setFarmacos] = useState([{ id: "", nombre: "", tipo_presentacion: "", precio_venta: "", cantidad: "" }]);
+  const [farmacos, setFarmacos] = useState([{ id: "", 
+    nombre: "", 
+    presentacion: "", 
+    precio_venta_caja: '',
+    precio_venta_blister: '',
+    precio_venta_unidad: '',
+    cantidad: "" }]);
   const [totalVenta, setTotalVenta] = useState(0);
   const [Nofactura, setNofactura] = useState('');
   const [Cliente, setCliente] = useState('');
@@ -25,69 +31,74 @@ const Ventas = () => {
     const { name, value } = target;
     const updatedFarmacos = [...farmacos];
   
-    // Cuando cambias el ID del fármaco
-    if (name === "id") {
-      updatedFarmacos[index][name] = value;
-      
-      // Asigna el tipo de presentación predeterminado si no está establecido
-      const tipoPresentacion = updatedFarmacos[index].tipo_presentacion || "unidad"; // Usa "unidad" o el valor que prefieras
-  
+    // Si se cambia el campo ID, hacer la solicitud para obtener los datos del fármaco
+    if (name === "id" && value) {
       try {
-        // Llamada a la API usando el ID y el tipo de presentación
-        const { data } = await ApiRequest().get(`/farmaco_venta/${value}`, { params: { tipo_presentacion: tipoPresentacion } });
+        // Realizar solicitud para obtener los datos del fármaco por ID
+        const { data } = await ApiRequest().get(`/farmaco/${value}`);
+  
+        // Verificar si se encontraron datos para el ID proporcionado
         if (data) {
-          updatedFarmacos[index] = { 
-            ...updatedFarmacos[index], 
-            nombre: data.nombre, 
-            precio_venta: data.precio_venta, // Asegúrate de que esto esté correctamente asignado
-            tipo_presentacion: data.presentacion // Esto debería ser el valor de presentación correcto
+          // Actualizar los datos del fármaco en base a la respuesta
+          updatedFarmacos[index] = {
+            ...updatedFarmacos[index],
+            ...data, // Asignar todos los datos del fármaco
           };
         } else {
-          updatedFarmacos[index] = { ...updatedFarmacos[index], nombre: "", precio_venta: 0, tipo_presentacion: "" };
-        }
-        setFarmacos(updatedFarmacos);
-      } catch (error) {
-        setMensaje({ ident: new Date().getTime(), message: 'Error al obtener los datos del fármaco', type: 'error' });
-        updatedFarmacos[index] = { ...updatedFarmacos[index], nombre: "", precio_venta: 0, tipo_presentacion: "" };
-        setFarmacos(updatedFarmacos);
-      }
-    }
-  
-    // Cuando cambias el tipo de presentación
-    else if (name === "tipo_presentacion") {
-      updatedFarmacos[index][name] = value; // Actualiza el valor de tipo_presentacion
-      try {
-        const { data } = await ApiRequest().get(`/farmaco_venta/${updatedFarmacos[index].id}`, { params: { tipo_presentacion: value } });
-        if (data) {
-          updatedFarmacos[index] = { 
-            ...updatedFarmacos[index], 
-            nombre: data.nombre, 
-            precio_venta: data.precio_venta, // Actualiza el precio de venta
-            tipo_presentacion: value // Asegúrate de que este valor sea correcto
+          // ID no encontrado, limpiar los campos del fármaco
+          updatedFarmacos[index] = {
+            ...updatedFarmacos[index],
+            id: value,
+            nombre: '',
+            precio_venta_caja: '',
+            precio_venta_blister: '',
+            precio_venta_unidad: '',
+            presentacion: 'caja', // Ajustar según sea necesario
           };
-        } else {
-          updatedFarmacos[index] = { ...updatedFarmacos[index], nombre: "", precio_venta: 0, tipo_presentacion: "" };
         }
+  
+        // Actualizar estado con los datos obtenidos o limpiados
         setFarmacos(updatedFarmacos);
       } catch (error) {
-        setMensaje({ ident: new Date().getTime(), message: 'Error al obtener los datos del fármaco', type: 'error' });
+        // Manejo del error, por ejemplo, mostrar un mensaje de error
+        setMensaje({
+          ident: new Date().getTime(),
+          message: 'Error al obtener los datos del fármaco',
+          type: 'error',
+        });
+  
+        // Limpiar los campos del fármaco si el ID no es válido
+        if (error.response?.status === 404) {
+          updatedFarmacos[index] = {
+            ...updatedFarmacos[index],
+            id: value,
+            nombre: '',
+            precio_venta_caja: '',
+            precio_venta_blister: '',
+            precio_venta_unidad: '',
+            presentacion: 'caja', // Ajustar según sea necesario
+          };
+          setFarmacos(updatedFarmacos);
+        }
       }
-    }
-  
-    // Para otros campos
-    else {
+    } else {
+      // Si no es el ID, actualizar el valor normalmente
       updatedFarmacos[index][name] = value;
+      setFarmacos(updatedFarmacos);
     }
   
+    // Recalcular total de la compra
     calculateTotalCompra(updatedFarmacos);
+    
   };
   
   
   const onChangePresentacion = (index, value) => {
     const updatedFarmacos = [...farmacos];
-    updatedFarmacos[index].tipo_presentacion = value; // Cambia el valor en el campo tipo_presentacion
+    updatedFarmacos[index].presentacion = value;
     setFarmacos(updatedFarmacos);
   };
+
   
   const generateDocumentNumber = () => {
     const timestamp = Date.now(); // Obtener un timestamp
@@ -96,7 +107,13 @@ const Ventas = () => {
   
 
   const addFarmaco = () => {
-    setFarmacos([...farmacos, { id: "", nombre: "", tipo_presentacion: "", precio_venta: "", cantidad: "" }]);
+    setFarmacos([...farmacos, { id: "", 
+      nombre: "", 
+      presentacion: "", 
+      precio_venta_caja: '',
+      precio_venta_blister: '',
+      precio_venta_unidad: '',
+      cantidad: "" }]);
   };
 
   const removeFarmaco = (index) => {
@@ -108,12 +125,31 @@ const Ventas = () => {
 
   const calculateTotalCompra = (farmacos) => {
     const total = farmacos.reduce((acc, farmaco) => {
-      const precioVenta = parseFloat(farmaco.precio_venta) || 0;
+      // Determina el precio según la presentación
+      let precioVenta = 0;
+      
+      switch (farmaco.presentacion) {
+        case "caja":
+          precioVenta = parseFloat(farmaco.precio_venta_caja) || 0;
+          break;
+        case "blister":
+          precioVenta = parseFloat(farmaco.precio_venta_blister) || 0;
+          break;
+        case "unidad":
+          precioVenta = parseFloat(farmaco.precio_venta_unidad) || 0;
+          break;
+        default:
+          precioVenta = 0; // Caso para manejar presentaciones no especificadas
+          break;
+      }
+  
       const cantidad = parseInt(farmaco.cantidad, 10) || 0;
       return acc + (precioVenta * cantidad);
     }, 0);
+  
     setTotalVenta(total);
   };
+  
 
   const generatePDF = () => {
     // Cambiar el tamaño de la página a algo más parecido a un recibo
@@ -301,8 +337,8 @@ const onSubmit = async () => {
                     <TableCell>
                     <FormControl fullWidth>
                     <Select
-                      name="tipo_presentacion"
-                      value={farmaco.tipo_presentacion} // Usa un valor por defecto si es necesario
+                      name="presentacion"
+                      value={farmaco.presentacion} // Usa un valor por defecto si es necesario
                       onChange={(e) => {
                         onChangePresentacion(index, e.target.value); // Actualiza solo la presentación
                         onChangeFarmaco(index, e); // Llama también a la función principal para manejar la API
@@ -313,16 +349,43 @@ const onSubmit = async () => {
                       <MenuItem value="unidad">Unidad</MenuItem>
                     </Select>
                   </FormControl>
-
                   </TableCell>
+                  {farmaco.presentacion === "caja" && (
+                  <>
                     <TableCell>
                       <TextField
-                        name="precio_venta"
-                        value={farmaco.precio_venta}
+                        name="precio_venta_caja"
+                        value={farmaco.precio_venta_caja}
                         fullWidth
                         disabled
                       />
                     </TableCell>
+                    </>
+                  )}
+                  {farmaco.presentacion === "unidad" && (
+                  <>
+                    <TableCell>
+                      <TextField
+                        name="precio_venta_unidad"
+                        value={farmaco.precio_venta_unidad}
+                        fullWidth
+                        disabled
+                      />
+                    </TableCell>
+                    </>
+                  )}
+                  {farmaco.presentacion === "blister" && (
+                  <>
+                    <TableCell>
+                      <TextField
+                        name="precio_venta_blister"
+                        value={farmaco.precio_venta_blister}
+                        fullWidth
+                        disabled
+                      />
+                    </TableCell>
+                    </>
+                  )}
                     <TableCell>
                       <TextField
                         name="cantidad"
@@ -333,7 +396,28 @@ const onSubmit = async () => {
                       />
                     </TableCell>
                     <TableCell>
-                      Q{(parseFloat(farmaco.precio_venta) * parseInt(farmaco.cantidad || 0, 10)).toFixed(2)}
+                      Q{(() => {
+                        let precioVenta = 0;
+                        
+                        // Determina el precio según la presentación
+                        switch (farmaco.presentacion) {
+                          case "caja":
+                            precioVenta = parseFloat(farmaco.precio_venta_caja) || 0;
+                            break;
+                          case "blister":
+                            precioVenta = parseFloat(farmaco.precio_venta_blister) || 0;
+                            break;
+                          case "unidad":
+                            precioVenta = parseFloat(farmaco.precio_venta_unidad) || 0;
+                            break;
+                          default:
+                            precioVenta = 0;
+                            break;
+                        }
+
+                        const cantidad = parseInt(farmaco.cantidad || 0, 10);
+                        return (precioVenta * cantidad).toFixed(2);
+                      })()}
                     </TableCell>
                     <TableCell align="center">
                       <IconButton color="primary" onClick={addFarmaco}>
