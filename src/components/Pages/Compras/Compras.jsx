@@ -35,7 +35,8 @@ const Compras = () => {
     proveedor_id: "",
     laboratorio_id: "",
     fecha_vencimiento: "",
-    presentacion: "caja" // Estado para la presentación seleccionada
+    presentacion: "caja", // Estado para la presentación seleccionada
+    busqueda: ""
   }]);
 
   const [proveedorId, setProveedorId] = useState(''); // Estado para ID del proveedor
@@ -221,114 +222,99 @@ const Compras = () => {
 };
 
 
+const onChangeFarmaco = async (index, { target }) => {
+  const { name, value } = target;
+  const updatedFarmacos = [...farmacos];
 
-  /*const onChangeFarmaco = (index, { target }) => {
-    const { name, value } = target;
-    const updatedFarmacos = [...farmacos];
-    updatedFarmacos[index][name] = value;
-    setFarmacos(updatedFarmacos);
-    calculateTotalCompra(updatedFarmacos); // Calcular total al cambiar fármacos
-  };*/
+  // Actualizar el campo inmediatamente al escribir
+  updatedFarmacos[index][name] = value;
+  setFarmacos(updatedFarmacos); // Esto actualizará el campo 'busqueda' mientras escribes.
 
-  const onChangeFarmaco = async (index, { target }) => {
-    const { name, value } = target;
-    const updatedFarmacos = [...farmacos];
-  
-    // Si se cambia el campo ID, hacer la solicitud para obtener los datos del fármaco
-    if (name === "id" && value) {
+  // Si se cambia el campo ID o nombre, hacer la solicitud para obtener los datos del fármaco
+  if ((name === "id" || name === "busqueda") && value) {
       try {
-        // Realizar solicitud para obtener los datos del fármaco por ID
-        const { data } = await ApiRequest().get(`/farmaco/${value}`);
-  
-        // Verificar si se encontraron datos para el ID proporcionado
-        if (data) {
-          // Actualizar los datos del fármaco en base a la respuesta
-          updatedFarmacos[index] = {
-            ...updatedFarmacos[index],
-            ...data, // Asignar todos los datos del fármaco
-          };
-        } else {
-          // ID no encontrado, limpiar los campos del fármaco
-          updatedFarmacos[index] = {
-            ...updatedFarmacos[index],
-            id: value,
-            nombre: '',
-            descripcion: '',
-            precio_caja: '',
-            precio_blister: '',
-            precio_unidad: '',
-            precio_venta_caja: '',
-            precio_venta_blister: '',
-            precio_venta_unidad: '',
-            blisters_por_caja: '',
-            unidades_por_blister: '',
-            stock_caja: '',
-            stock_blister: '',
-            stock_unidad: '',
-            nivel_reorden: '',
-            codigo_barras: '',
-            proveedor_id: '',
-            laboratorio_id: '',
-            fecha_vencimiento: '',
-            presentacion: 'caja', // Ajustar según sea necesario
-          };
-        }
-  
-        // Actualizar estado con los datos obtenidos o limpiados
-        setFarmacos(updatedFarmacos);
-      } catch (error) {
-        // Manejo del error, por ejemplo, mostrar un mensaje de error
-        setMensaje({
-          ident: new Date().getTime(),
-          message: 'Error al obtener los datos del fármaco',
-          type: 'error',
-        });
-  
-        // Limpiar los campos del fármaco si el ID no es válido
-        if (error.response?.status === 404) {
-          updatedFarmacos[index] = {
-            ...updatedFarmacos[index],
-            id: value,
-            nombre: '',
-            descripcion: '',
-            precio_caja: '',
-            precio_blister: '',
-            precio_unidad: '',
-            precio_venta_caja: '',
-            precio_venta_blister: '',
-            precio_venta_unidad: '',
-            blisters_por_caja: '',
-            unidades_por_blister: '',
-            stock_caja: '',
-            stock_blister: '',
-            stock_unidad: '',
-            nivel_reorden: '',
-            codigo_barras: '',
-            proveedor_id: '',
-            laboratorio_id: '',
-            fecha_vencimiento: '',
-            presentacion: 'caja', // Ajustar según sea necesario
-          };
+          // Realizar solicitud para obtener los datos del fármaco por ID o nombre
+          const { data } = await ApiRequest().get(`/farmaco/${value}`);
+
+          // Verificar si se encontraron datos para el ID o nombre proporcionado
+          if (data) {
+              // Actualizar los datos del fármaco en base a la respuesta
+              updatedFarmacos[index] = {
+                  ...updatedFarmacos[index],
+                  ...data, // Asignar todos los datos del fármaco
+              };
+          } else {
+              // ID o nombre no encontrado, limpiar los campos del fármaco
+              updatedFarmacos[index] = {
+                  ...updatedFarmacos[index],
+                  id: value,
+                  nombre: '',
+                  descripcion: '',
+                  precio_caja: '',
+                  precio_blister: '',
+                  precio_unidad: '',
+                  precio_venta_caja: '',
+                  precio_venta_blister: '',
+                  precio_venta_unidad: '',
+                  blisters_por_caja: '',
+                  unidades_por_blister: '',
+                  stock_caja: '',
+                  stock_blister: '',
+                  stock_unidad: '',
+                  nivel_reorden: '',
+                  codigo_barras: '',
+                  proveedor_id: '',
+                  laboratorio_id: '',
+                  fecha_vencimiento: '',
+                  presentacion: 'caja', // Ajustar según sea necesario
+              };
+          }
+
+          // Actualizar estado con los datos obtenidos o limpiados
           setFarmacos(updatedFarmacos);
-        }
+      } catch (error) {
+          // Manejo del error, por ejemplo, mostrar un mensaje de error
+          setMensaje({
+              ident: new Date().getTime(),
+              message: 'Error al obtener los datos del fármaco',
+              type: 'error',
+          });
+
+          // Limpiar los campos del fármaco si el ID o nombre no es válido
+          if (error.response?.status === 404) {
+              updatedFarmacos[index] = {
+                  ...updatedFarmacos[index],
+                  id: name === "id" ? value : '', // Si el campo cambiado es ID, conservar el ID
+                  nombre: name === "nombre" ? value : '', // Si el campo cambiado es nombre, conservar el nombre
+                  descripcion: '',
+                  precio_caja: '',
+                  precio_blister: '',
+                  precio_unidad: '',
+                  precio_venta_caja: '',
+                  precio_venta_blister: '',
+                  precio_venta_unidad: '',
+                  blisters_por_caja: '',
+                  unidades_por_blister: '',
+                  stock_caja: '',
+                  stock_blister: '',
+                  stock_unidad: '',
+                  nivel_reorden: '',
+                  codigo_barras: '',
+                  proveedor_id: '',
+                  laboratorio_id: '',
+                  fecha_vencimiento: '',
+                  presentacion: 'caja', // Ajustar según sea necesario
+              };
+              setFarmacos(updatedFarmacos);
+          }
       }
-    } else {
-      // Si no es el ID, actualizar el valor normalmente
-      updatedFarmacos[index][name] = value;
-      setFarmacos(updatedFarmacos);
-    }
-  
-    // Recalcular total de la compra
-    /*if (name === 'stock_caja' || name === 'blisters_por_caja') {
-      calcularStockBlister(updatedFarmacos);
-    }*/
-    /*if (name === 'stock_blister' || name === 'unidades_por_blister') {
-      calcularStockUnidad(updatedFarmacos);
-    }*/
-    calculateTotalCompra(updatedFarmacos);
-    
-  };
-  
+  }
+
+  // Recalcular total de la compra
+  calculateTotalCompra(updatedFarmacos);
+};
+
+
 
   const onChangePresentacion = (index, value) => {
     const updatedFarmacos = [...farmacos];
@@ -519,13 +505,21 @@ const Compras = () => {
                 </Grid>
 
           </Grid>
-
+            
           {/* Fármacos */}
           {farmacos.map((farmaco, index) => (
             <Box key={index} sx={{ mt: 4, border: '1px solid #ccc', padding: 2 }}>
               <Typography variant="h6">Fármaco comprado {index + 1}</Typography>
               <Grid container spacing={2}>
-
+              <Grid item xs={12} sm={10}>
+                  <TextField
+                    fullWidth
+                    label="Busqueda por nombre"
+                    name="busqueda"
+                    value={farmaco.busqueda}
+                    onChange={(e) => onChangeFarmaco(index, e)}
+                  />
+                </Grid>
                 {/* Selección de Presentación */}
                 <Grid item xs={12} sm={4}>
                   <FormControl fullWidth variant="outlined">

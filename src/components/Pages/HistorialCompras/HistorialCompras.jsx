@@ -17,6 +17,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  ButtonGroup,
 } from '@mui/material';
 import Page from '../../common/Page';
 import ApiRequest from '../../../helpers/axiosInstances';
@@ -32,6 +33,7 @@ const HistorialCompras = () => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
   const [open, setOpen] = useState(false); // Estado para controlar el modal
+  const [filter, setFilter] = useState(''); // Estado para controlar el filtro
 
   useEffect(() => {
     let isMounted = true; // Para evitar actualizaciones de estado si el componente se desmonta
@@ -80,135 +82,171 @@ const HistorialCompras = () => {
     setDetalle([]); // Limpiar detalles al cerrar el modal
   };
 
-  const filteredCompras = compras.filter(compra =>
-    compra.Nofactura.toString().includes(searchTerm) ||
-    compra.fecha.toString().includes(searchTerm)
+  const applyFilter = (compras) => {
+    const now = new Date();
+
+    if (filter === 'month') {
+      return compras.filter(compra => {
+        const fechaCompra = new Date(compra.fecha_compra);
+        return fechaCompra.getMonth() === now.getMonth() && fechaCompra.getFullYear() === now.getFullYear();
+      });
+    }
+
+    if (filter === 'week') {
+      const currentWeekStart = new Date(now.setDate(now.getDate() - now.getDay()));
+      return compras.filter(compra => {
+        const fechaCompra = new Date(compra.fecha_compra);
+        return fechaCompra >= currentWeekStart;
+      });
+    }
+
+    if (filter === 'year') {
+      return compras.filter(compra => {
+        const fechaCompra = new Date(compra.fecha_compra);
+        return fechaCompra.getFullYear() === now.getFullYear();
+      });
+    }
+
+    return compras;
+  };
+
+  const filteredCompras = applyFilter(
+    compras.filter(compra =>
+      compra.Nofactura.toString().includes(searchTerm) ||
+      compra.fecha_compra.toString().includes(searchTerm)
+    )
   );
 
   return (
     <>
-    <Page title="Chapina| Historial de compras">
-    <Container>
-      
-      <Typography variant="h4" gutterBottom>Historial de Compras</Typography>
+      <Page title="Chapina| Historial de compras">
+        <Container>
+          <Typography variant="h4" gutterBottom>Historial de Compras</Typography>
 
-      {mensaje.message && (
-        <ToastAutoHide
-          message={mensaje.message}
-          type={mensaje.type}
-          id={mensaje.ident}
-        />
-      )}
+          {mensaje.message && (
+            <ToastAutoHide
+              message={mensaje.message}
+              type={mensaje.type}
+              id={mensaje.ident}
+            />
+          )}
 
-      <TextField
-        label="Buscar por No. de factura o fecha"
-        variant="outlined"
-        fullWidth
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        sx={{ mb: 2 }}
-      />
+          <TextField
+            label="Buscar por No. de factura o fecha"
+            variant="outlined"
+            fullWidth
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            sx={{ mb: 2 }}
+          />
 
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>
-                <TableSortLabel active>
-                  No. de documento
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel active>
-                  Tipo de documento
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel active>
-                  Fecha
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel active>
-                  Proveedor
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>
-                <TableSortLabel active>
-                  Total
-                </TableSortLabel>
-              </TableCell>
-              <TableCell align="right">
-                Acciones
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {filteredCompras.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((compra) => (
-              <TableRow key={compra.id}>
-                <TableCell>{compra.Nofactura}</TableCell>
-                <TableCell>{compra.tipo_documento}</TableCell>
-                <TableCell>{compra.fecha_compra}</TableCell>
-                <TableCell>{compra.proveedor}</TableCell>
-                <TableCell>{compra.total_compra.toFixed(2)}</TableCell>
-                <TableCell align="right">
-                  <Button variant="outlined" onClick={() => fetchDetalleCompra(compra.Nofactura)}>
-                    Ver Detalles
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+          <ButtonGroup variant="contained" sx={{ mb: 2 }}>
+            <Button onClick={() => setFilter('week')}>Esta Semana</Button>
+            <Button onClick={() => setFilter('month')}>Este Mes</Button>
+            <Button onClick={() => setFilter('year')}>Este Año</Button>
+            <Button onClick={() => setFilter('')}>Todas</Button>
+          </ButtonGroup>
 
-      <TablePagination
-        rowsPerPageOptions={[5, 10, 25]}
-        component="div"
-        count={filteredCompras.length}
-        rowsPerPage={rowsPerPage}
-        page={page}
-        onPageChange={handleChangePage}
-        onRowsPerPageChange={handleChangeRowsPerPage}
-      />
-
-      {/* Modal para mostrar detalles de la compra */}
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Detalles de la Compra</DialogTitle>
-        <DialogContent>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>Farmaco</TableCell>
-                <TableCell>Cantidad</TableCell>
-                <TableCell>Precio de Compra</TableCell>
-                <TableCell>Total</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {Array.isArray(detalle) && detalle.length > 0 ? (
-                detalle.map((item) => (
-                  <TableRow key={item.detalle_id}>
-                    <TableCell>{item.nombre_farmaco}</TableCell>
-                    <TableCell>{item.cantidad}</TableCell>
-                    <TableCell>{item.precio_compra.toFixed(2)}</TableCell>
-                    <TableCell>{item.total_farmaco.toFixed(2)}</TableCell>
-                  </TableRow>
-                ))
-              ) : (
+          <TableContainer>
+            <Table>
+              <TableHead>
                 <TableRow>
-                  <TableCell colSpan={4} align="center">No hay detalles disponibles</TableCell>
+                  <TableCell>
+                    <TableSortLabel active>
+                      No. de documento
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>
+                    <TableSortLabel active>
+                      Tipo de documento
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>
+                    <TableSortLabel active>
+                      Fecha
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>
+                    <TableSortLabel active>
+                      Proveedor
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell>
+                    <TableSortLabel active>
+                      Total
+                    </TableSortLabel>
+                  </TableCell>
+                  <TableCell align="right">
+                    Acciones
+                  </TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">Cerrar</Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
-    </Page>
+              </TableHead>
+              <TableBody>
+                {filteredCompras.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((compra) => (
+                  <TableRow key={compra.id}>
+                    <TableCell>{compra.Nofactura}</TableCell>
+                    <TableCell>{compra.tipo_documento}</TableCell>
+                    <TableCell>{compra.fecha_compra}</TableCell>
+                    <TableCell>{compra.proveedor}</TableCell>
+                    <TableCell>{compra.total_compra.toFixed(2)}</TableCell>
+                    <TableCell align="right">
+                      <Button variant="outlined" onClick={() => fetchDetalleCompra(compra.Nofactura)}>
+                        Ver Detalles
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={filteredCompras.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={handleChangePage}
+            onRowsPerPageChange={handleChangeRowsPerPage}
+          />
+
+          {/* Modal para mostrar detalles de la compra */}
+          <Dialog open={open} onClose={handleClose}>
+            <DialogTitle>Detalles de la Compra</DialogTitle>
+            <DialogContent>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>Farmaco</TableCell>
+                    <TableCell>Cantidad</TableCell>
+                    <TableCell>Precio de Compra</TableCell>
+                    <TableCell>Total</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {Array.isArray(detalle) && detalle.length > 0 ? (
+                    detalle.map((item) => (
+                      <TableRow key={item.detalle_id}>
+                        <TableCell>{item.nombre_farmaco}</TableCell>
+                        <TableCell>{item.cantidad}</TableCell>
+                        <TableCell>{item.precio_compra.toFixed(2)}</TableCell>
+                        <TableCell>{item.total_farmaco.toFixed(2)}</TableCell>
+                      </TableRow>
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={4} align="center">No hay detalles disponibles</TableCell>
+                    </TableRow>
+                  )}
+                </TableBody>
+              </Table>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary">Cerrar</Button>
+            </DialogActions>
+          </Dialog>
+        </Container>
+      </Page>
     </>
   );
 };
