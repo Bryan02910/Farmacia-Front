@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useContext } from 'react';
 import {
-  TextField, Container, Typography, Grid, Box, Button, Stack, IconButton, MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableHead, TableRow, TableContainer, Paper
+  TextField, Container, Typography, Grid, Box, Button, Stack, IconButton, MenuItem, Select, InputLabel, FormControl, Table, TableBody, TableCell, TableHead, TableRow, TableContainer, Paper, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import ApiRequest from '../../../helpers/axiosInstances';
-import { AddOutlined, DeleteOutline } from '@mui/icons-material';
+import { AddOutlined, DeleteOutline, SearchOutlined } from '@mui/icons-material';
 import Page from '../../common/Page';
 import ToastAutoHide from '../../common/ToastAutoHide';
 import { MainContext } from '../../../Context/MainContext';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import imagesList from '../../../assets'
 
 const Ventas = () => {
   const { globalState } = useContext(MainContext);
@@ -19,7 +18,8 @@ const Ventas = () => {
     precio_venta_caja: '',
     precio_venta_blister: '',
     precio_venta_unidad: '',
-    cantidad: "" }]);
+    cantidad: "",
+    precio_mayor: "" }]);
   const [totalVenta, setTotalVenta] = useState(0);
   const [Nofactura, setNofactura] = useState('');
   const [Cliente, setCliente] = useState('');
@@ -27,10 +27,72 @@ const Ventas = () => {
   const [currentDate, setCurrentDate] = useState('');
   const [mensaje, setMensaje] = useState({ ident: null, message: null, type: null });
 
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchResults, setSearchResults] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+    fetchFarmacos(); // Cargar los fármacos al abrir el modal
+  };
+
+  // Función para cerrar el modal
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
+  };
+
+  // Función para cargar los fármacos desde la API
+  const fetchFarmacos = async () => {
+    try {
+      const { data } = await ApiRequest().get('/farmacos_venta');
+      setSearchResults(data); // Cargar los resultados en el modal
+    } catch (error) {
+      console.error('Error al obtener los fármacos:', error);
+    }
+  };
+
+  // Función para seleccionar un fármaco y cargarlo en el formulario
+  const handleSelectFarmaco = (farmaco) => {
+    setFarmacos((prevFarmacos) => {
+      const firstEmptyIndex = prevFarmacos.findIndex(f => f.id === ""); // Buscar el primer fármaco vacío
+      
+      if (firstEmptyIndex !== -1) {
+        // Reemplazar el primer fármaco vacío
+        const updatedFarmacos = [...prevFarmacos];
+        updatedFarmacos[firstEmptyIndex] = {
+          id: farmaco.id,
+          nombre: farmaco.nombre,
+          presentacion: farmaco.presentacion,
+          precio_venta_caja: farmaco.precio_venta_caja,
+          precio_venta_blister: farmaco.precio_venta_blister,
+          precio_venta_unidad: farmaco.precio_venta_unidad,
+          cantidad: ''
+        };
+        return updatedFarmacos;
+      } else {
+        // Si no hay fármaco vacío, agregar uno nuevo
+        return [
+          ...prevFarmacos,
+          {
+            id: farmaco.id,
+            nombre: farmaco.nombre,
+            presentacion: farmaco.presentacion,
+            precio_venta_caja: farmaco.precio_venta_caja,
+            precio_venta_blister: farmaco.precio_venta_blister,
+            precio_venta_unidad: farmaco.precio_venta_unidad,
+            cantidad: ''
+          }
+        ];
+      }
+    });
+    handleCloseModal(); // Cerrar el modal
+  };
+  
+
   const onChangeFarmaco = async (index, { target }) => {
     const { name, value } = target;
     const updatedFarmacos = [...farmacos];
-  
+    updatedFarmacos[index][name] = value || '';
     // Si se cambia el campo ID, hacer la solicitud para obtener los datos del fármaco
     if (name === "id" && value) {
       try {
@@ -263,50 +325,73 @@ const onSubmit = async () => {
 
         <Box sx={{ mt: 2 }}>
           {mensaje.message && (
-            <ToastAutoHide
-              message={mensaje.message}
-              type={mensaje.type}
-              id={mensaje.ident}
-            />
+            <ToastAutoHide message={mensaje.message} type={mensaje.type} id={mensaje.ident} />
           )}
 
-          {/* Sección de Información del cliente y venta */}
           <Grid container spacing={2} sx={{ mb: 3 }}>
             <Grid item xs={12} sm={6} md={3}>
-              <Typography variant="h6">
-                Fecha de compra: {currentDate}
-              </Typography>
+              <Typography variant="h6">Fecha de compra: {currentDate}</Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                label="No. de documento"
-                value={Nofactura}
-                fullWidth
-                variant="outlined"
-                InputProps={{
-                  readOnly: true, // Hacer el campo de número de documento de solo lectura
-                }}
-              />
+              <TextField label="No. de documento" value={Nofactura} fullWidth variant="outlined" InputProps={{ readOnly: true }} />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                label="Nombre del cliente"
-                value={Cliente}
-                onChange={(e) => setCliente(e.target.value)}
-                fullWidth
-                variant="outlined"
-              />
+              <TextField label="Nombre del cliente" value={Cliente} onChange={(e) => setCliente(e.target.value)} fullWidth variant="outlined" />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
-              <TextField
-                label="Nit"
-                value={Nit}
-                onChange={(e) => setNit(e.target.value)}
-                fullWidth
-                variant="outlined"
-              />
+              <TextField label="Nit" value={Nit} onChange={(e) => setNit(e.target.value)} fullWidth variant="outlined" />
             </Grid>
           </Grid>
+
+          {/* Botón de búsqueda para abrir el modal */}
+          <Button variant="outlined" startIcon={<SearchOutlined />} onClick={handleOpenModal}>
+            Buscar Fármaco
+          </Button>
+
+          {/* Modal de búsqueda */}
+          <Dialog open={isModalOpen} onClose={handleCloseModal} fullWidth maxWidth="md">
+            <DialogTitle>Buscar Fármaco</DialogTitle>
+            <DialogContent>
+              <TextField
+                label="Buscar por nombre"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                fullWidth
+                margin="dense"
+              />
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>ID</TableCell>
+                      <TableCell>Nombre</TableCell>
+                      <TableCell>Stock Caja</TableCell>
+                      <TableCell>Stock Blister</TableCell>
+                      <TableCell>Stock Unidad</TableCell>
+                      <TableCell>Acciones</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {searchResults.filter(farmaco => farmaco.nombre.toLowerCase().includes(searchTerm.toLowerCase())).map((farmaco) => (
+                      <TableRow key={farmaco.id}>
+                        <TableCell>{farmaco.id}</TableCell>
+                        <TableCell>{farmaco.nombre}</TableCell>
+                        <TableCell>{farmaco.stock_caja}</TableCell>
+                        <TableCell>{farmaco.stock_blister}</TableCell>
+                        <TableCell>{farmaco.stock_unidad}</TableCell>
+                        <TableCell>
+                          <Button variant="contained" onClick={() => handleSelectFarmaco(farmaco)}>Seleccionar</Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseModal}>Cerrar</Button>
+            </DialogActions>
+          </Dialog>
 
           {/* Tabla de fármacos */}
           <TableContainer component={Paper}>

@@ -113,7 +113,8 @@ const HistorialCompras = () => {
   const filteredCompras = applyFilter(
     compras.filter(compra =>
       compra.Nofactura.toString().includes(searchTerm) ||
-      compra.fecha_compra.toString().includes(searchTerm)
+      compra.fecha_compra.toString().includes(searchTerm) ||
+      compra.proveedor.toString().includes(searchTerm)
     )
   );
 

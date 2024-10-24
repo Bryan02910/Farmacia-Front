@@ -113,10 +113,10 @@ const HistorialVentas = () => {
   const filteredCompras = applyFilter(
     compras.filter(compra =>
       compra.Nofactura.toString().includes(searchTerm) ||
-      compra.fecha_venta.toString().includes(searchTerm)
+      compra.fecha_venta.toString().includes(searchTerm) 
     )
   );
-
+ 
   return (
     <>
       <Page title="Chapina| Historial de ventas">
