@@ -9,6 +9,7 @@ import ToastAutoHide from '../../common/ToastAutoHide';
 import { MainContext } from '../../../Context/MainContext';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import imagesList from '../../../assets'
 
 const Ventas = () => {
   const { globalState } = useContext(MainContext);
@@ -349,6 +350,7 @@ const onSubmit = async () => {
           </Button>
 
           {/* Modal de búsqueda */}
+          <Grid>
           <Dialog open={isModalOpen} onClose={handleCloseModal} fullWidth maxWidth="md">
             <DialogTitle>Buscar Fármaco</DialogTitle>
             <DialogContent>
@@ -392,7 +394,7 @@ const onSubmit = async () => {
               <Button onClick={handleCloseModal}>Cerrar</Button>
             </DialogActions>
           </Dialog>
-
+          </Grid>
           {/* Tabla de fármacos */}
           <TableContainer component={Paper}>
             <Table>
