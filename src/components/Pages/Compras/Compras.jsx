@@ -48,21 +48,23 @@ const Compras = () => {
   const [totalCompra, setTotalCompra] = useState(0); // Estado para total
   const [currentDate, setCurrentDate] = useState(''); // Fecha actual 
   const [mensaje, setMensaje] = useState({ ident: null, message: null, type: null });
-
+  const [currentFarmacoIndex, setCurrentFarmacoIndex] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleOpenModal = () => {
+  const handleOpenModal = (index) => {
     setIsModalOpen(true);
+    setCurrentFarmacoIndex(index); // Guardar el índice del fármaco actual
     fetchFarmacos(); // Cargar los fármacos al abrir el modal
   };
-
+  
   // Función para cerrar el modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
+    setCurrentFarmacoIndex(null); // Restablecer el índice actual
   };
-
+  
   // Función para cargar los fármacos desde la API
   const fetchFarmacos = async () => {
     try {
@@ -72,68 +74,34 @@ const Compras = () => {
       console.error('Error al obtener los fármacos:', error);
     }
   };
-
+  
+  // Función para seleccionar un fármaco y actualizar el estado
   const handleSelectFarmaco = (farmaco) => {
-    setFarmacos((prevFarmacos) => {
-      const firstEmptyIndex = prevFarmacos.findIndex(f => f.id === ""); // Buscar el primer fármaco vacío
-      
-      if (firstEmptyIndex !== -1) {
-        // Reemplazar el primer fármaco vacío
-        const updatedFarmacos = [...prevFarmacos];
-        updatedFarmacos[firstEmptyIndex] = {
-          id: farmaco.id,
-          nombre: farmaco.nombre,
-          descripcion: farmaco.descripcion,
-          precio_caja: farmaco.precio_caja,
-          precio_blister: farmaco.precio_blister,
-          precio_unidad: farmaco.precio_unidad,
-          precio_venta_caja: farmaco.precio_venta_caja,
-          precio_venta_blister: farmaco.precio_venta_blister,
-          precio_venta_unidad: farmaco.precio_venta_unidad,
-          blisters_por_caja: farmaco.blisters_por_caja,
-          unidades_por_blister: farmaco.unidades_por_blister,
-          stock_caja: farmaco.stock_caja,
-          stock_blister: farmaco.stock_blister,
-          stock_unidad: farmaco.stock_unidad,
-          nivel_reorden: farmaco.nivel_reorden,
-          codigo_barras: farmaco.codigo_barras,
-          proveedor_id: farmaco.proveedor_id,
-          laboratorio_id: farmaco.laboratorio_id,
-          fecha_vencimiento: farmaco.fecha_vencimiento,
-          presentacion: farmaco.presentacion || "caja", // Presentación seleccionada por defecto
-          cantidad: '' // Inicialmente vacío para ingresar cantidad
-        };
-        return updatedFarmacos;
-      } else {
-        // Si no hay fármaco vacío, agregar uno nuevo
-        return [
-          ...prevFarmacos,
-          {
-            id: farmaco.id,
-            nombre: farmaco.nombre,
-            descripcion: farmaco.descripcion,
-            precio_caja: farmaco.precio_caja,
-            precio_blister: farmaco.precio_blister,
-            precio_unidad: farmaco.precio_unidad,
-            precio_venta_caja: farmaco.precio_venta_caja,
-            precio_venta_blister: farmaco.precio_venta_blister,
-            precio_venta_unidad: farmaco.precio_venta_unidad,
-            blisters_por_caja: farmaco.blisters_por_caja,
-            unidades_por_blister: farmaco.unidades_por_blister,
-            stock_caja: farmaco.stock_caja,
-            stock_blister: farmaco.stock_blister,
-            stock_unidad: farmaco.stock_unidad,
-            nivel_reorden: farmaco.nivel_reorden,
-            codigo_barras: farmaco.codigo_barras,
-            proveedor_id: farmaco.proveedor_id,
-            laboratorio_id: farmaco.laboratorio_id,
-            fecha_vencimiento: farmaco.fecha_vencimiento,
-            presentacion: farmaco.presentacion || "caja", // Presentación seleccionada por defecto
-            cantidad: '' // Inicialmente vacío para ingresar cantidad
-          }
-        ];
-      }
-    });
+    const updatedFarmacos = [...farmacos];
+    updatedFarmacos[currentFarmacoIndex] = {  // Usar el índice actual
+      id: farmaco.id,
+      nombre: farmaco.nombre,
+      descripcion: farmaco.descripcion,
+      precio_caja: farmaco.precio_caja,
+      precio_blister: farmaco.precio_blister,
+      precio_unidad: farmaco.precio_unidad,
+      precio_venta_caja: farmaco.precio_venta_caja,
+      precio_venta_blister: farmaco.precio_venta_blister,
+      precio_venta_unidad: farmaco.precio_venta_unidad,
+      blisters_por_caja: farmaco.blisters_por_caja,
+      unidades_por_blister: farmaco.unidades_por_blister,
+      stock_caja: farmaco.stock_caja,
+      stock_blister: farmaco.stock_blister,
+      stock_unidad: farmaco.stock_unidad,
+      nivel_reorden: farmaco.nivel_reorden,
+      codigo_barras: farmaco.codigo_barras,
+      proveedor_id: farmaco.proveedor_id,
+      laboratorio_id: farmaco.laboratorio_id,
+      fecha_vencimiento: farmaco.fecha_vencimiento,
+      presentacion: farmaco.presentacion || "caja", // Presentación seleccionada por defecto
+      cantidad: '' // Inicialmente vacío para ingresar cantidad
+    };
+    setFarmacos(updatedFarmacos);
     handleCloseModal(); // Cerrar el modal
   };
   
@@ -594,14 +562,16 @@ const onChangeFarmaco = async (index, { target }) => {
                 </Grid>
 
           </Grid>
-          <Button variant="outlined" startIcon={<SearchOutlined />} onClick={handleOpenModal}>
-            Buscar Fármaco
-          </Button>
           {/* Fármacos */}
           {farmacos.map((farmaco, index) => (
             <Box key={index} sx={{ mt: 4, border: '1px solid #ccc', padding: 2 }}>
               <Typography variant="h6">Fármaco comprado {index + 1}</Typography>
               <Grid container spacing={2}>
+              <Grid item xs={12}>
+              <Button variant="outlined" startIcon={<SearchOutlined />} onClick={() => handleOpenModal(index)}>
+              Buscar Fármaco
+            </Button>
+            </Grid>
                 {/* Selección de Presentación */}
                 <Grid item xs={12} sm={4}>
                   <FormControl fullWidth variant="outlined">
