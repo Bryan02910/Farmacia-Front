@@ -18,6 +18,7 @@ const Compras = () => {
   const [farmacos, setFarmacos] = useState([{
     id: "",
     nombre: "",
+    presentacion: "caja", // Estado para la presentación seleccionada
     descripcion: "",
     precio_caja: "",
     precio_blister: "",
@@ -35,8 +36,6 @@ const Compras = () => {
     proveedor_id: "",
     laboratorio_id: "",
     fecha_vencimiento: "",
-    presentacion: "caja", // Estado para la presentación seleccionada
-    busqueda: ""
   }]);
 
   const [proveedorId, setProveedorId] = useState(''); // Estado para ID del proveedor
@@ -81,6 +80,7 @@ const Compras = () => {
     updatedFarmacos[currentFarmacoIndex] = {  // Usar el índice actual
       id: farmaco.id,
       nombre: farmaco.nombre,
+      presentacion: farmaco.presentacion || "caja", // Presentación seleccionada por defecto
       descripcion: farmaco.descripcion,
       precio_caja: farmaco.precio_caja,
       precio_blister: farmaco.precio_blister,
@@ -98,8 +98,6 @@ const Compras = () => {
       proveedor_id: farmaco.proveedor_id,
       laboratorio_id: farmaco.laboratorio_id,
       fecha_vencimiento: farmaco.fecha_vencimiento,
-      presentacion: farmaco.presentacion || "caja", // Presentación seleccionada por defecto
-      cantidad: '' // Inicialmente vacío para ingresar cantidad
     };
     setFarmacos(updatedFarmacos);
     handleCloseModal(); // Cerrar el modal

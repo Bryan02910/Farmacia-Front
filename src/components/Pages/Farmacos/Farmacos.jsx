@@ -126,27 +126,23 @@ const Farmaco = () => {
     ];
 
     const onDelete = async () => {
-        try {
-            // Obtener el usuario antes de eliminarlo
-            const userToDelete = usuariosList.find(user => user.id === idDelete);
-            setDeletedUsers(prev => [...prev, userToDelete]);
-
-            const { data } = await ApiRequest().post('/eliminar_farmaco', { id: idDelete });
-            setMensaje({
-                ident: new Date().getTime(),
-                message: data.message,
-                type: 'success'
-            });
-            handleDialogDelete();
-            init();
-        } catch ({ response }) {
-            setMensaje({
-                ident: new Date().getTime(),
-                message: response.data.sqlMessage,
-                type: 'error'
-            });
-        }
-    };
+		try {
+			const { data } = await ApiRequest().post('/eliminar_farmaco', { id: idDelete })
+			setMensaje({
+				ident: new Date().getTime(),
+				message: data.message,
+				type: 'success'
+			})
+			handleDialogDelete()
+			init()
+		} catch ({ response }) {
+			setMensaje({
+				ident: new Date().getTime(),
+				message: response.data.sqlMessage,
+				type: 'error'
+			})
+		}
+	}
 
     const handleDialog = () => {
         
