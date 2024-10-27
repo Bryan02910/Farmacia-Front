@@ -23,6 +23,10 @@ import Page from '../../common/Page';
 import ApiRequest from '../../../helpers/axiosInstances';
 import { MainContext } from '../../../Context/MainContext';
 import ToastAutoHide from '../../common/ToastAutoHide';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
+import * as XLSX from 'xlsx';
+import imagesList from '../../../assets'
 
 const HistorialVentas = () => {
   const { globalState } = useContext(MainContext);
@@ -116,6 +120,76 @@ const HistorialVentas = () => {
       compra.fecha_venta.toString().includes(searchTerm) 
     )
   );
+
+  const generatePDFReport = () => {
+    const doc = new jsPDF('landscape', 'mm', 'a4');
+    const imageUrl = imagesList.Logo; // Usar la imagen importada
+
+    // Añadir imagen
+    const addImage = () => {
+        const imgWidth = 40;
+        const imgHeight = 30;
+        const margin = 10;
+        doc.addImage(imageUrl, 'JPEG', doc.internal.pageSize.getWidth() - imgWidth - margin, margin, imgWidth, imgHeight);
+    };
+
+    const title = `Reporte de Ventas - ${filter ? `Filtro: ${filter}` : 'Todas las Ventas'}`;
+
+    // Añadir título
+    doc.setFontSize(14);
+    doc.text(title, 20, 15);
+
+    // Generar filas de datos
+    const rows = filteredCompras.map(compra => [
+        compra.Nofactura,
+        compra.fecha_venta,
+        compra.nombre_cliente,
+        compra.nit,
+        compra.total_venta.toFixed(2),
+    ]);
+
+    // Columnas de la tabla
+    const columns = ['No. de recibo', 'Fecha', 'Cliente', 'Nit', 'Total'];
+
+    // Configurar y generar la tabla
+    addImage(); // Añadir imagen
+    doc.autoTable({
+        head: [columns],
+        body: rows,
+        startY: 30, // Margen para la imagen y el título
+        theme: 'striped',
+        styles: {
+            fontSize: 10,
+            cellPadding: 2,
+        },
+        headStyles: {
+            fillColor: [22, 160, 133], // Cambiar color de encabezado si se desea
+        },
+        didDrawPage: (data) => {
+            addImage(); // Añadir imagen en cada nueva página
+        },
+    });
+
+    // Guardar el documento
+    doc.save(`Reporte_Ventas_${filter || 'todas'}.pdf`);
+};
+
+  
+  // Función para generar reporte en Excel usando xlsx
+  const generateExcelReport = () => {
+    const worksheetData = filteredCompras.map(compra => ({
+      'No. de recibo': compra.Nofactura,
+      'Fecha': compra.fecha_venta,
+      'Cliente': compra.nombre_cliente,
+      'Nit': compra.nit,
+      'Total': compra.total_venta.toFixed(2),
+    }));
+  
+    const worksheet = XLSX.utils.json_to_sheet(worksheetData);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Ventas');
+    XLSX.writeFile(workbook, `Reporte_Ventas_${filter || 'todas'}.xlsx`);
+  };
  
   return (
     <>
@@ -140,12 +214,19 @@ const HistorialVentas = () => {
             sx={{ mb: 2 }}
           />
 
-          <ButtonGroup variant="contained" sx={{ mb: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+          <ButtonGroup variant="contained">
             <Button onClick={() => setFilter('week')}>Esta Semana</Button>
             <Button onClick={() => setFilter('month')}>Este Mes</Button>
             <Button onClick={() => setFilter('year')}>Este Año</Button>
             <Button onClick={() => setFilter('')}>Todas</Button>
           </ButtonGroup>
+
+          <ButtonGroup variant="contained">
+            <Button onClick={generatePDFReport}>Generar PDF</Button>
+            <Button onClick={generateExcelReport}>Generar Excel</Button>
+          </ButtonGroup>
+        </Box>
 
           <TableContainer>
             <Table>
