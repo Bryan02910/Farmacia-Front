@@ -249,9 +249,9 @@ const Ventas = () => {
     // Configurar y generar el PDF
     addImage();
     doc.setFontSize(10);
-    doc.text('Reporte de Venta', 10, 25);
+    doc.text('Recibo de Venta', 10, 25);
     doc.text(`Fecha: ${currentDateFormatted}`, 10, 30);
-    doc.text(`Factura: ${Nofactura}`, 10, 35);
+    doc.text(`No. Recibo de venta: ${Nofactura}`, 10, 35);
     doc.text(`Cliente: ${Cliente}`, 10, 40);
     doc.text(`NIT: ${Nit}`, 10, 45);
   
