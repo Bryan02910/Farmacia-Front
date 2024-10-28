@@ -123,7 +123,7 @@ const HistorialVentas = () => {
 
   const generatePDFReport = () => {
     const doc = new jsPDF('landscape', 'mm', 'a4');
-    const imageUrl = imagesList.Logo; // Usar la imagen importada
+    const imageUrl = imagesList.Logo;
 
     // Añadir imagen
     const addImage = () => {
@@ -134,7 +134,7 @@ const HistorialVentas = () => {
     };
 
     const title = `Reporte de Ventas - ${filter ? `Filtro: ${filter}` : 'Todas las Ventas'}`;
-
+    
     // Añadir título
     doc.setFontSize(14);
     doc.text(title, 20, 15);
@@ -150,6 +150,12 @@ const HistorialVentas = () => {
 
     // Columnas de la tabla
     const columns = ['No. de recibo', 'Fecha', 'Cliente', 'Nit', 'Total'];
+
+    // Calcular el total general de ventas
+    const totalGeneral = filteredCompras.reduce((sum, compra) => sum + parseFloat(compra.total_venta || 0), 0).toFixed(2);
+
+    // Agregar una fila para el total general
+    rows.push(['', '', '', 'Total General', totalGeneral]);
 
     // Configurar y generar la tabla
     addImage(); // Añadir imagen
@@ -173,6 +179,7 @@ const HistorialVentas = () => {
     // Guardar el documento
     doc.save(`Reporte_Ventas_${filter || 'todas'}.pdf`);
 };
+
 
   
   // Función para generar reporte en Excel usando xlsx

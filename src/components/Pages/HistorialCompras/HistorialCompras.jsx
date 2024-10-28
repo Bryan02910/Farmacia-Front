@@ -133,6 +133,12 @@ const HistorialCompras = () => {
 
     const columns = ['No. de recibo', 'Fecha', 'Proveedor', 'Total'];
 
+    // Calcular el total general de compras
+    const totalGeneral = filteredCompras.reduce((sum, compra) => sum + parseFloat(compra.total_compra || 0), 0).toFixed(2);
+
+    // Agregar una fila para el total general
+    rows.push(['', '', 'Total General', totalGeneral]);
+
     // Configurar y generar la tabla
     addImage(); // Añadir imagen
     doc.autoTable({
@@ -154,6 +160,7 @@ const HistorialCompras = () => {
 
     doc.save(`Reporte_Compras_${filter || 'todas'}.pdf`);
 };
+
 
   
   const generateExcelReport = () => {

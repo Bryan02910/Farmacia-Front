@@ -228,21 +228,21 @@ const Compras = () => {
     ];
 
     const data = farmacos.map(farmaco => ({
-        id: farmaco.id.toString(),
-        nombre: farmaco.nombre,
-        descripcion: farmaco.descripcion,
-        precio_caja: farmaco.precio_caja > 0 ? farmaco.precio_caja : '-',
-        stock_caja: farmaco.stock_caja > 0 ? farmaco.stock_caja : '-',
-        precio_blister: farmaco.precio_blister > 0 ? farmaco.precio_blister : '-',
-        stock_blister: farmaco.stock_blister > 0 ? farmaco.stock_blister : '-',
-        precio_unidad: farmaco.precio_unidad > 0 ? farmaco.precio_unidad : '-',
-        stock_unidad: farmaco.stock_unidad > 0 ? farmaco.stock_unidad : '-',
-        total: (
-            (parseFloat(farmaco.precio_caja || 0) * parseFloat(farmaco.stock_caja || 0)) +
-            (parseFloat(farmaco.precio_blister || 0) * parseFloat(farmaco.stock_blister || 0)) +
-            (parseFloat(farmaco.precio_unidad || 0) * parseFloat(farmaco.stock_unidad || 0))
-        ).toFixed(2) // Asegurarse de que el total tenga dos decimales
-    }));
+      id: farmaco.id.toString(),
+      nombre: farmaco.nombre,
+      descripcion: farmaco.descripcion,
+      precio_caja: parseFloat(farmaco.precio_caja) > 0 ? farmaco.precio_caja : '-',
+      stock_caja: parseFloat(farmaco.stock_caja) > 0 ? farmaco.stock_caja : '-',
+      precio_blister: parseFloat(farmaco.precio_blister) > 0 ? farmaco.precio_blister : '-',
+      stock_blister: parseFloat(farmaco.stock_blister) > 0 ? farmaco.stock_blister : '-',
+      precio_unidad: parseFloat(farmaco.precio_unidad) > 0 ? farmaco.precio_unidad : '-',
+      stock_unidad: parseFloat(farmaco.stock_unidad) > 0 ? farmaco.stock_unidad : '-',
+      total: (
+          (parseFloat(farmaco.precio_caja || 0) * parseFloat(farmaco.stock_caja || 0)) +
+          (parseFloat(farmaco.precio_blister || 0) * parseFloat(farmaco.stock_blister || 0)) +
+          (parseFloat(farmaco.precio_unidad || 0) * parseFloat(farmaco.stock_unidad || 0))
+      ).toFixed(2) // Formato con dos decimales
+  }));
 
     // Configurar y generar el PDF
     addImage();
