@@ -29,6 +29,17 @@ const sidebarConfig = [
     ],
   },
   {
+    title: 'Gestión de Clientes',
+    icon: <PersonOutlined />,
+    children: [
+      {
+        title: 'Lista de Clientes',
+        path: '/app/cliente',
+        icon: <SupervisorAccountOutlined />,
+      },
+    ],
+  },
+  {
     title: 'Ventas',
     icon: <ShoppingCartOutlined />,
     children: [

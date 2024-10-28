@@ -13,7 +13,8 @@ import imagesList from '../../../assets'
 
 const Ventas = () => {
   const { globalState } = useContext(MainContext);
-  const [farmacos, setFarmacos] = useState([{ id: "", 
+  const [farmacos, setFarmacos] = useState([{ 
+    id: "", 
     nombre: "", 
     presentacion: "", 
     precio_venta_caja: '',
@@ -21,6 +22,16 @@ const Ventas = () => {
     precio_venta_unidad: '',
     cantidad: "",
     precio_mayor: "" }]);
+
+    const [clientes, setClientes] = useState([{ 
+      id: "", 
+      nombre: "", 
+      correo: "", 
+      dpi: '',
+      nit: '',
+      telefono: '',
+      direccion: ""
+     }]);
   const [totalVenta, setTotalVenta] = useState(0);
   const [Nofactura, setNofactura] = useState('');
   const [Cliente, setCliente] = useState('');
@@ -29,17 +40,38 @@ const Ventas = () => {
   const [mensaje, setMensaje] = useState({ ident: null, message: null, type: null });
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalOpen1, setIsModalOpen1] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
+ 
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
+    setIsModalOpen1(true);
     fetchFarmacos(); // Cargar los fármacos al abrir el modal
+  };
+
+  const handleOpenModal1 = () => {
+    setIsModalOpen1(true);
+    fetchClientes(); // Cargar los fármacos al abrir el modal
   };
 
   // Función para cerrar el modal
   const handleCloseModal = () => {
     setIsModalOpen(false);
+  };
+
+  const handleCloseModal1 = () => {
+    setIsModalOpen1(false)
+  };
+
+  const fetchClientes = async () => {
+    try {
+      const { data } = await ApiRequest().get('/clientes');
+      setSearchResults(data); // Cargar los resultados en el modal
+    } catch (error) {
+      console.error('Error al obtener los clientes:', error);
+    }
   };
 
   // Función para cargar los fármacos desde la API
@@ -87,6 +119,12 @@ const Ventas = () => {
       }
     });
     handleCloseModal(); // Cerrar el modal
+  };
+
+  const handleUpdateCliente = (cliente) => {
+    setCliente(cliente.nombre || ""); // Asegúrate de establecer un valor por defecto
+    setNit(cliente.nit || ""); // Asegúrate de establecer un valor por defecto
+    handleCloseModal1();
   };
   
 
@@ -215,20 +253,41 @@ const Ventas = () => {
   
 
   const generatePDF = () => {
-    // Cambiar el tamaño de la página a algo más parecido a un recibo
-    const doc = new jsPDF('portrait', 'mm', [210, 150]); // 210mm de alto y 150mm de ancho (tamaño similar a recibo)
+    // Cambiar el tamaño de la página a un tamaño de recibo vertical
+    const doc = new jsPDF('portrait', 'mm', [150, 75]);
     const currentDateFormatted = new Date().toLocaleDateString();
     const imageUrl = imagesList.Logo;
-  
+
     // Añadir logo (opcional, si tienes un logo importado)
     const addImage = () => {
-      const imgWidth = 30; // Un tamaño más pequeño para recibo
-      const imgHeight = 20;
-      const margin = 10;
-      doc.addImage(imageUrl, 'JPEG', doc.internal.pageSize.getWidth() - imgWidth - margin, margin, imgWidth, imgHeight); // Opcional
+      const imgWidth = 25;
+      const imgHeight = 15;
+      const margin = 5;
+      doc.addImage(imageUrl, 'JPEG', margin, margin, imgWidth, imgHeight);
     };
-  
-    // Preparar las columnas para la tabla
+
+    // Información de venta en forma de tabla
+    const ventaInfo = [
+      { label: 'Fecha:', value: currentDateFormatted },
+      { label: 'No. Recibo de venta:', value: Nofactura },
+      { label: 'Comprador final', value: Cliente },
+      { label: 'NIT:', value: Nit }
+    ];
+
+    // Crear tabla para la información de la venta
+    doc.autoTable({
+      body: ventaInfo.map(info => ([info.label, info.value])),
+      startY: 30, // Posición después del logo
+      margin: { horizontal: 5 },
+      theme: 'plain',
+      styles: { fontSize: 8, cellPadding: 1 },
+      columnStyles: {
+        0: { cellWidth: 35, fontStyle: 'bold' },
+        1: { cellWidth: 40 },
+      }
+    });
+
+    // Preparar las columnas para la tabla de productos
     const columns = [
       { header: 'ID', dataKey: 'id' },
       { header: 'Nombre', dataKey: 'nombre' },
@@ -236,8 +295,8 @@ const Ventas = () => {
       { header: 'Precio', dataKey: 'precio_venta' },
       { header: 'Subtotal', dataKey: 'subtotal' }
     ];
-  
-    // Preparar los datos
+
+    // Preparar los datos de los productos
     const data = farmacos.map(farmaco => ({
       id: farmaco.id,
       nombre: farmaco.nombre,
@@ -245,37 +304,22 @@ const Ventas = () => {
       precio_venta: parseFloat(farmaco.precio_venta || 0).toFixed(2),
       subtotal: (parseFloat(farmaco.precio_venta || 0) * parseInt(farmaco.cantidad || 0, 10)).toFixed(2)
     }));
-  
-    // Configurar y generar el PDF
+
+    // Configurar y generar la tabla de productos
     addImage();
-    doc.setFontSize(10);
-    doc.text('Recibo de Venta', 10, 25);
-    doc.text(`Fecha: ${currentDateFormatted}`, 10, 30);
-    doc.text(`No. Recibo de venta: ${Nofactura}`, 10, 35);
-    doc.text(`Cliente: ${Cliente}`, 10, 40);
-    doc.text(`NIT: ${Nit}`, 10, 45);
-  
     doc.autoTable({
       columns: columns,
       body: data,
-      startY: 50, // Ajustar el espacio superior para la imagen y el título
-      margin: { horizontal: 5 }, // Márgenes pequeños para aprovechar el espacio
+      startY: doc.lastAutoTable.finalY + 5, // Ajustar espacio después de la tabla de información de venta
+      margin: { horizontal: 2 },
       theme: 'grid',
-      styles: {
-        fontSize: 8,
-        cellPadding: 2, // Espaciado reducido
-      },
-      headStyles: {
-        fillColor: [22, 160, 133], // Color del encabezado
-      },
-      didDrawPage: (data) => {
-        addImage(); // Añadir imagen en cada nueva página
-      },
+      styles: { fontSize: 8, cellPadding: 1 },
+      headStyles: { fillColor: [22, 160, 133] }
     });
-  
+
     // Agregar el total de la venta al final
-    doc.text(`Total Venta: Q${totalVenta.toFixed(2)}`, 10, doc.lastAutoTable.finalY + 10);
-  
+    doc.text(`Total Venta: Q${totalVenta.toFixed(2)}`, 5, doc.lastAutoTable.finalY + 5);
+
     // Descargar el archivo PDF
     doc.save('venta_recibo.pdf');
 };
@@ -336,8 +380,13 @@ const onSubmit = async () => {
             <Grid item xs={12} sm={6} md={3}>
               <TextField label="No. de documento" value={Nofactura} fullWidth variant="outlined" InputProps={{ readOnly: true }} />
             </Grid>
-            <Grid item xs={12} sm={6} md={3}>
-              <TextField label="Nombre del cliente" value={Cliente} onChange={(e) => setCliente(e.target.value)} fullWidth variant="outlined" />
+            <Grid item xs={12} sm={6} md={3} >
+            <Button variant="outlined" startIcon={<SearchOutlined />} onClick={handleOpenModal1}>
+            Buscar cliente
+          </Button>
+          </Grid>
+            <Grid item xs={13} sm={6} md={3}>
+              <TextField label="Comprador final" value={Cliente} onChange={(e) => setCliente(e.target.value)} fullWidth variant="outlined" />
             </Grid>
             <Grid item xs={12} sm={6} md={3}>
               <TextField label="Nit" value={Nit} onChange={(e) => setNit(e.target.value)} fullWidth variant="outlined" />
@@ -351,7 +400,49 @@ const onSubmit = async () => {
 
           {/* Modal de búsqueda */}
           <Grid>
-          <Dialog open={isModalOpen} onClose={handleCloseModal} fullWidth maxWidth="md">
+          <Dialog open={isModalOpen1} onClose={handleCloseModal1} fullWidth maxWidth="md">
+            <DialogTitle>Buscar cliente</DialogTitle>
+            <DialogContent>
+              <TextField
+                label="Buscar por nombre"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                fullWidth
+                margin="dense"
+              />
+              <TableContainer component={Paper}>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>ID</TableCell>
+                      <TableCell>Nombre</TableCell>
+                      <TableCell>Nit</TableCell>
+                
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {searchResults.filter(clientes => clientes.nombre.toLowerCase().includes(searchTerm.toLowerCase())).map((clientes) => (
+                      <TableRow key={clientes.id}>
+                        <TableCell>{clientes.id}</TableCell>
+                        <TableCell>{clientes.nombre}</TableCell>
+                        <TableCell>{clientes.nit}</TableCell>
+                        <TableCell>
+                          <Button variant="contained" onClick={() =>  handleUpdateCliente(clientes)}>Seleccionar</Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleCloseModal1}>Cerrar</Button>
+            </DialogActions>
+          </Dialog>
+          </Grid>
+
+          <Grid>
+          <Dialog open={isModalOpen} onClose={handleCloseModal1} fullWidth maxWidth="md">
             <DialogTitle>Buscar Fármaco</DialogTitle>
             <DialogContent>
               <TextField

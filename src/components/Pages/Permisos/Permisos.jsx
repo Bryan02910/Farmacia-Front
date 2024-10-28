@@ -29,7 +29,8 @@ const Permisos = () => {
         ver_historial_compras: "",
         ver_historial_ventas: "",
         ver_tipod:"",
-        ver_permisos:""
+        ver_permisos:"",
+        ver_cliente:""
     };
 
     const [usuariosList, setUsuariosList] = useState([]);
@@ -89,6 +90,7 @@ const Permisos = () => {
             11: 'ver_historial_ventas',
             12: 'ver_tipod',
             13: 'ver_permisos',
+            14: 'ver_cliente'
         };
     
         const permisoKey = permisoMap[permisoId];
@@ -149,6 +151,17 @@ const Permisos = () => {
                 <Checkbox 
                     checked={params.row.ver_usuarios === 'Sí'} 
                     onChange={(e) => handleCheckboxChange(e, params.row, 1)} // Asumiendo que el ID del permiso es 1
+                />
+            )
+        },
+        { 
+            field: 'ver_cliente', 
+            headerName: 'Permiso cliente', 
+            width: 220,
+            renderCell: (params) => (
+                <Checkbox 
+                    checked={params.row.ver_cliente === 'Sí'} 
+                    onChange={(e) => handleCheckboxChange(e, params.row, 14)} // Asumiendo que el ID del permiso es 1
                 />
             )
         },

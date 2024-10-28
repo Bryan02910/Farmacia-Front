@@ -28,11 +28,9 @@ const Dashboard = () => {
         <Page title="Chapina | Dashboard">
             <Container maxWidth="xl">
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', py: 5 }}>
-                    <Typography sx={{ fontWeight: 'bold', mb: 2 }} variant='h5'>
-                        Bienvenido a
-                    </Typography>
+                    
                     <Typography sx={{ fontWeight: 'bold', mb: 4 }} variant='h2'>
-                        Farmacia Chapina
+                        Farmacia Chapina 
                     </Typography>
                     
                     <Grid container spacing={2} justifyContent="center" sx={{ mb: 4 }}>

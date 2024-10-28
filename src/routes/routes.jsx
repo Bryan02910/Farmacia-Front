@@ -19,6 +19,7 @@ const Acceso = lazy (() => import('../components/Pages/Acceso'))
 const HistorialCompras = lazy (() => import('../components/Pages/HistorialCompras'))
 const HistorialVentas = lazy (() => import('../components/Pages/HistorialVentas'))
 const Notificaciones = lazy (() => import('../components/Pages/Notificaciones'))
+const Cliente = lazy (() => import('../components/Pages/Cliente'))
 
 const routes = [
 	{
@@ -104,6 +105,11 @@ const routes = [
 				path: `/${APP_VALUES.ROOT_ROUTE}/notificaciones`,
 				exact: true,
 				render: props => <RouteController component={Notificaciones} {...props} requiredPermissions={['ver_notificaciones']} />
+			},
+			{
+				path: `/${APP_VALUES.ROOT_ROUTE}/cliente`,
+				exact: true,
+				render: props => <RouteController component={Cliente} {...props} requiredPermissions={['ver_cliente']} />
 			},
 			{
 				path: `/${APP_VALUES.ROOT_ROUTE}/*`,
