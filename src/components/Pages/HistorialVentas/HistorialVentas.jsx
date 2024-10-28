@@ -117,7 +117,8 @@ const HistorialVentas = () => {
   const filteredCompras = applyFilter(
     compras.filter(compra =>
       compra.Nofactura.toString().includes(searchTerm) ||
-      compra.fecha_venta.toString().includes(searchTerm) 
+      compra.fecha_venta.toString().includes(searchTerm) ||
+      compra.nombre_cliente.toString().includes(searchTerm) 
     )
   );
 

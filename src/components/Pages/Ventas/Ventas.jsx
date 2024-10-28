@@ -47,7 +47,6 @@ const Ventas = () => {
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
-    setIsModalOpen1(true);
     fetchFarmacos(); // Cargar los fármacos al abrir el modal
   };
 
