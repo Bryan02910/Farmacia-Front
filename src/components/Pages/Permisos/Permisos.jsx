@@ -155,17 +155,6 @@ const Permisos = () => {
             )
         },
         { 
-            field: 'ver_cliente', 
-            headerName: 'Permiso cliente', 
-            width: 220,
-            renderCell: (params) => (
-                <Checkbox 
-                    checked={params.row.ver_cliente === 'Sí'} 
-                    onChange={(e) => handleCheckboxChange(e, params.row, 14)} // Asumiendo que el ID del permiso es 1
-                />
-            )
-        },
-        { 
             field: 'ver_ventas', 
             headerName: 'Permiso ventas', 
             width: 220,
@@ -283,6 +272,17 @@ const Permisos = () => {
                 <Checkbox 
                     checked={params.row.ver_permisos === 'Sí'} 
                     onChange={(e) => handleCheckboxChange(e, params.row, 13)}
+                />
+            )
+        },
+        { 
+            field: 'ver_cliente', 
+            headerName: 'Permiso cliente', 
+            width: 220,
+            renderCell: (params) => (
+                <Checkbox 
+                    checked={params.row.ver_cliente === 'Sí'} 
+                    onChange={(e) => handleCheckboxChange(e, params.row, 14)} // Asumiendo que el ID del permiso es 1
                 />
             )
         },

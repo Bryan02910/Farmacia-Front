@@ -252,76 +252,88 @@ const Ventas = () => {
   
 
   const generatePDF = () => {
-    // Cambiar el tamaño de la página a un tamaño de recibo vertical
     const doc = new jsPDF('portrait', 'mm', [150, 75]);
     const currentDateFormatted = new Date().toLocaleDateString();
     const imageUrl = imagesList.Logo;
 
-    // Añadir logo (opcional, si tienes un logo importado)
     const addImage = () => {
-      const imgWidth = 25;
-      const imgHeight = 15;
-      const margin = 5;
-      doc.addImage(imageUrl, 'JPEG', margin, margin, imgWidth, imgHeight);
+        const imgWidth = 25;
+        const imgHeight = 15;
+        const margin = 5;
+        doc.addImage(imageUrl, 'JPEG', margin, margin, imgWidth, imgHeight);
     };
 
-    // Información de venta en forma de tabla
     const ventaInfo = [
-      { label: 'Fecha:', value: currentDateFormatted },
-      { label: 'No. Recibo de venta:', value: Nofactura },
-      { label: 'Comprador final', value: Cliente },
-      { label: 'NIT:', value: Nit }
+        { label: 'Fecha:', value: currentDateFormatted },
+        { label: 'No. Recibo de venta:', value: Nofactura },
+        { label: 'Comprador final', value: Cliente },
+        { label: 'NIT:', value: Nit }
     ];
 
-    // Crear tabla para la información de la venta
     doc.autoTable({
-      body: ventaInfo.map(info => ([info.label, info.value])),
-      startY: 30, // Posición después del logo
-      margin: { horizontal: 5 },
-      theme: 'plain',
-      styles: { fontSize: 8, cellPadding: 1 },
-      columnStyles: {
-        0: { cellWidth: 35, fontStyle: 'bold' },
-        1: { cellWidth: 40 },
-      }
+        body: ventaInfo.map(info => ([info.label, info.value])),
+        startY: 30,
+        margin: { horizontal: 5 },
+        theme: 'plain',
+        styles: { fontSize: 8, cellPadding: 1 },
+        columnStyles: {
+            0: { cellWidth: 35, fontStyle: 'bold' },
+            1: { cellWidth: 40 },
+        }
     });
 
-    // Preparar las columnas para la tabla de productos
     const columns = [
-      { header: 'ID', dataKey: 'id' },
-      { header: 'Nombre', dataKey: 'nombre' },
-      { header: 'Cant.', dataKey: 'cantidad' },
-      { header: 'Precio', dataKey: 'precio_venta' },
-      { header: 'Subtotal', dataKey: 'subtotal' }
+        { header: 'ID', dataKey: 'id' },
+        { header: 'Nombre', dataKey: 'nombre' },
+        { header: 'Cant.', dataKey: 'cantidad' },
+        { header: 'Precio', dataKey: 'precio_venta' },
+        { header: 'Subtotal', dataKey: 'subtotal' }
     ];
 
-    // Preparar los datos de los productos
-    const data = farmacos.map(farmaco => ({
-      id: farmaco.id,
-      nombre: farmaco.nombre,
-      cantidad: parseInt(farmaco.cantidad || 0, 10),
-      precio_venta: parseFloat(farmaco.precio_venta || 0).toFixed(2),
-      subtotal: (parseFloat(farmaco.precio_venta || 0) * parseInt(farmaco.cantidad || 0, 10)).toFixed(2)
-    }));
+    const data = farmacos.map(farmaco => {
+        let precioVenta = 0;
+        
+        // Determinar el precio basado en la presentación seleccionada
+        switch (farmaco.presentacion) {
+            case "caja":
+                precioVenta = parseFloat(farmaco.precio_venta_caja) || 0;
+                break;
+            case "blister":
+                precioVenta = parseFloat(farmaco.precio_venta_blister) || 0;
+                break;
+            case "unidad":
+                precioVenta = parseFloat(farmaco.precio_venta_unidad) || 0;
+                break;
+            default:
+                precioVenta = 0; // Presentación no especificada
+                break;
+        }
 
-    // Configurar y generar la tabla de productos
+        return {
+            id: farmaco.id,
+            nombre: farmaco.nombre,
+            cantidad: parseInt(farmaco.cantidad || 0, 10),
+            precio_venta: precioVenta.toFixed(2),
+            subtotal: (precioVenta * parseInt(farmaco.cantidad || 0, 10)).toFixed(2)
+        };
+    });
+
     addImage();
     doc.autoTable({
-      columns: columns,
-      body: data,
-      startY: doc.lastAutoTable.finalY + 5, // Ajustar espacio después de la tabla de información de venta
-      margin: { horizontal: 2 },
-      theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 1 },
-      headStyles: { fillColor: [22, 160, 133] }
+        columns: columns,
+        body: data,
+        startY: doc.lastAutoTable.finalY + 5,
+        margin: { horizontal: 2 },
+        theme: 'grid',
+        styles: { fontSize: 8, cellPadding: 1 },
+        headStyles: { fillColor: [22, 160, 133] }
     });
 
-    // Agregar el total de la venta al final
     doc.text(`Total Venta: Q${totalVenta.toFixed(2)}`, 5, doc.lastAutoTable.finalY + 5);
-
-    // Descargar el archivo PDF
     doc.save('venta_recibo.pdf');
 };
+
+
 
 
 const onSubmit = async () => {

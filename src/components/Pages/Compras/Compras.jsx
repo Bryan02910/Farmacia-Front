@@ -202,7 +202,7 @@ const Compras = () => {
 
   const generatePDF = () => {
     const doc = new jsPDF('landscape', 'mm', 'a4');
-    const imageUrl = imagesList.Logo; // Usar la imagen importada
+    const imageUrl = imagesList.Logo;
     const currentDateFormatted = formatDate(new Date());
 
     // Añadir imagen
@@ -227,22 +227,28 @@ const Compras = () => {
         { header: 'Total', dataKey: 'total' },
     ];
 
-    const data = farmacos.map(farmaco => ({
-      id: farmaco.id.toString(),
-      nombre: farmaco.nombre,
-      descripcion: farmaco.descripcion,
-      precio_caja: parseFloat(farmaco.precio_caja) > 0 ? farmaco.precio_caja : '-',
-      stock_caja: parseFloat(farmaco.stock_caja) > 0 ? farmaco.stock_caja : '-',
-      precio_blister: parseFloat(farmaco.precio_blister) > 0 ? farmaco.precio_blister : '-',
-      stock_blister: parseFloat(farmaco.stock_blister) > 0 ? farmaco.stock_blister : '-',
-      precio_unidad: parseFloat(farmaco.precio_unidad) > 0 ? farmaco.precio_unidad : '-',
-      stock_unidad: parseFloat(farmaco.stock_unidad) > 0 ? farmaco.stock_unidad : '-',
-      total: (
-          (parseFloat(farmaco.precio_caja || 0) * parseFloat(farmaco.stock_caja || 0)) +
-          (parseFloat(farmaco.precio_blister || 0) * parseFloat(farmaco.stock_blister || 0)) +
-          (parseFloat(farmaco.precio_unidad || 0) * parseFloat(farmaco.stock_unidad || 0))
-      ).toFixed(2) // Formato con dos decimales
-  }));
+    let totalCompra = 0; // Acumular el total de la compra
+    const data = farmacos.map(farmaco => {
+        const total = 
+            (parseFloat(farmaco.precio_caja) || 0) * (parseFloat(farmaco.stock_caja) || 0) +
+            (parseFloat(farmaco.precio_blister) || 0) * (parseFloat(farmaco.stock_blister) || 0) +
+            (parseFloat(farmaco.precio_unidad) || 0) * (parseFloat(farmaco.stock_unidad) || 0);
+
+        totalCompra += total; // Acumular en totalCompra
+
+        return {
+            id: farmaco.id.toString(),
+            nombre: farmaco.nombre,
+            descripcion: farmaco.descripcion,
+            precio_caja: farmaco.precio_caja || '-',
+            stock_caja: farmaco.stock_caja || '-',
+            precio_blister: farmaco.precio_blister || '-',
+            stock_blister: farmaco.stock_blister || '-',
+            precio_unidad: farmaco.precio_unidad || '-',
+            stock_unidad: farmaco.stock_unidad || '-',
+            total: total.toFixed(2) // Formato con dos decimales
+        };
+    });
 
     // Configurar y generar el PDF
     addImage();
@@ -254,7 +260,7 @@ const Compras = () => {
     doc.autoTable({
         columns: columns,
         body: data,
-        startY: 35, // Ajustar según el espacio para la imagen y el título
+        startY: 40,
         margin: { horizontal: 10 },
         theme: 'grid',
         styles: {
@@ -270,11 +276,13 @@ const Compras = () => {
     });
 
     // Agregar el total de la compra al final
-    doc.text(`Total Compra: ${totalCompra}`, 10, doc.lastAutoTable.finalY + 10);
+    doc.text(`Total Compra: Q${totalCompra.toFixed(2)}`, 10, doc.lastAutoTable.finalY + 10);
 
     // Descargar el archivo PDF
     doc.save('reporte_compra.pdf');
 };
+
+
 
 
 const onChangeFarmaco = async (index, { target }) => {
